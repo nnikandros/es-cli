@@ -14,12 +14,3 @@ build-static:
 test:
 	@go test ./test/
 
-completion: build
-	@es completion bash > es_bash.sh
-	@source es_bash.sh
-
-.PHONY: restore
-restore:
-	@complete -r es
-	@rm es_bash.sh
-
