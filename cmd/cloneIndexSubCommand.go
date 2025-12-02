@@ -13,9 +13,10 @@ func cloneIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "clone",
 		Short:             "clone subcommand clones an index(ices) that you provide as args",
-		Long:              `clones the given index provided as an argument (Careful with the use of this command )`,
+		Long:              "To be updated",
 		RunE:              runCloneIndexCmdFunc(es),
 		ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
+		Example:           `es clone -t <clone-index> <index-to-be-cloned>`,
 	}
 
 	return cmd
@@ -23,7 +24,7 @@ func cloneIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 }
 
 func addCloneFlags(countCmd *cobra.Command) *cobra.Command {
-	countCmd.Flags().StringP("target", "t", "", "adds the number of documents in the index pattern with a timestamp and displays it in a table format")
+	countCmd.Flags().StringP("target", "t", "", "Name of clone index that will be created.")
 	return countCmd
 
 }
