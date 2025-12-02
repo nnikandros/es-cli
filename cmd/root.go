@@ -14,8 +14,7 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "es",
 	Short: "Elasticsearch Operations",
-	Long: `Part of Bashhopper CLI tools.
-The es cli brings to you some of Elasticsearch operations in your terminal.
+	Long: `The es cli brings to you some of Elasticsearch operations in your terminal.
 Make sure you have the following environment variables exported
 - ES_API_KEY: not much to explain, create a token from Kibana
 - ES_HOSTS: (can be one host or a comma separated, for example ES_HOSTS=HOST-1,HOST-2,HOST-3 )
