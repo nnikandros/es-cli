@@ -52,10 +52,11 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 	searchCmd.Flags().StringSlice("id", []string{}, "do a term/terms search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
 	searchCmd.Flags().StringSlice("LEVEL", []string{}, "do a term search for a LEVEL")
 
-	searchCmd.RegisterFlagCompletionFunc("LEVEL", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		levels := []string{"DEBUG", "ERROR", "INFO"}
-		return levels, cobra.ShellCompDirectiveNoFileComp
-	})
+	// searchCmd.RegisterFlagCompletionFunc("LEVEL", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+	// 	levels := []string{"DEBUG", "ERROR", "INFO"}
+	// 	return levels, cobra.ShellCompDirectiveNoFileComp
+	// })
+	searchCmd.RegisterFlagCompletionFunc("LEVEL", cobra.FixedCompletions([]string{"DEBUG", "ERROR", "INFO"}, cobra.ShellCompDirectiveNoFileComp))
 
 	searchCmd.Flags().StringSlice("APP_NAME", []string{}, "do a term search for an APP_NAME")
 	return searchCmd
