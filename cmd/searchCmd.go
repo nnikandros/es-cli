@@ -107,7 +107,7 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 
 	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sortMap)
 
-	if flags.Terms && flags.Id != nil {
+	if flags.Id != nil {
 		if q := BuildTermIdQuery(flags.Id); q != nil {
 			searchReq = searchReq.Query(q)
 		}
