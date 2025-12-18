@@ -50,11 +50,6 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 		return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
 	}
 
-	if len(id) > 0 && !terms {
-		return SearchFlags{}, fmt.Errorf("you have provided a field but not a terms")
-
-	}
-
 	return SearchFlags{Size: resizeSize, Fields: fields, Time: time, Reverse: reverse, Tabular: tabular, Terms: terms, Id: id, LEVEL: level, APP_NAME: app_name}, nil
 
 }
