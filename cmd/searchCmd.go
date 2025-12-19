@@ -32,11 +32,14 @@ type EsFieldsConfig struct {
 	DefaultValue []string `yaml:"default"`
 	ValidArgs    []string `yaml:"valid-args"`
 	Usage        string   `yaml:"description"`
+	Value        []string
 }
 
 type EsFields struct {
 	Fields []EsFieldsConfig `yaml:"fields"`
 }
+
+var e EsFields
 
 func searchCmdFunc(es *elasticsearch.TypedClient) SearchCmd {
 	cmd := &cobra.Command{
@@ -74,15 +77,16 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 	// 	log.Fatal(err)
 	// }
 
-	var e EsFields
 	err := yaml.Unmarshal(fileByte, &e)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	esFieldsMap := make(map[string]struct{})
 	for _, f := range e.Fields {
+		esFieldsMap[f.Name] = struct{}{}
 		searchCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
 		searchCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
+
 	}
 
 	return searchCmd
@@ -140,14 +144,8 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 		}
 	}
 
-	if flags.Terms && flags.LEVEL != nil {
-		if q := BuildTermLevelQuery("LEVEL", flags.LEVEL); q != nil {
-			searchReq = searchReq.Query(q)
-		}
-	}
-
-	if flags.Terms && flags.APP_NAME != nil {
-		if q := BuildTermLevelQuery("APP_NAME", flags.APP_NAME); q != nil {
+	if flags.Terms {
+		if q := BuildTermLevelQuery(flags.FieldsTermsMap.Name, flags.FieldsTermsMap.Value); q != nil {
 			searchReq = searchReq.Query(q)
 		}
 	}
