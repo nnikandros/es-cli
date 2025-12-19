@@ -41,9 +41,9 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 		o = append(o, EsFieldsConfig{Name: f.Name, Value: valuesForField})
 	}
 
-	if len(o) > 1 {
-		return SearchFlags{}, fmt.Errorf("you have provided more than one term. Currently one is supported")
-	}
+	// if len(o) > 1 {
+	// 	return SearchFlags{}, fmt.Errorf("you have provided more than one term. Currently one is supported")
+	// }
 
 	if !time && reverse {
 		return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
