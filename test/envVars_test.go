@@ -6,22 +6,24 @@ import (
 	"os"
 	"testing"
 
+	"github.com/spf13/cobra"
 	"sigs.k8s.io/yaml"
 )
 
-type EsFIELDSConfig struct {
-	Name        string   `json:"name"`
-	Validargs   []string `json:"validargs"`
-	Description string   `json:"description"`
+type EsFieldsConfig struct {
+	Name         string   `yaml:"name"`
+	DefaultValue []string `yaml:"default"`
+	ValidArgs    []string `yaml:"valid-args"`
+	Usage        string   `yaml:"usage"`
 }
 
 type EsFields struct {
-	Fields []EsFIELDSConfig `json:"fields"`
+	Fields []EsFieldsConfig `yaml:"fields"`
 }
 
 func TestReadEnvVars(t *testing.T) {
 
-	b, err := os.ReadFile("../es_fields.yaml")
+	b, err := os.ReadFile("../cmd/es_fields.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,7 +34,13 @@ func TestReadEnvVars(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("%+v", e)
+	testCmd := &cobra.Command{Use: "testing additiong of flags"}
+
+	for _, f := range e.Fields {
+		testCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
+		testCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
+		fmt.Printf("%+v", testCmd.Flag(f.Name))
+	}
 
 	// err := godotenv.Load("../.env")
 	// if err != nil {

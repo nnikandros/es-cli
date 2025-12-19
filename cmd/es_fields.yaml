@@ -1,0 +1,9 @@
+fields:
+  - name: LEVEL
+    valid-args:
+      - INFO
+      - ERROR
+    usage: "do a terms search for LEVEL"
+  
+  - name: APP_NAME
+    usage: "do a term search with term APP_NAME"

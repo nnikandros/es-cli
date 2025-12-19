@@ -1,9 +1,0 @@
-fields:
-  - name: LEVEL
-    validargs:
-      - info
-      - error
-    description: stuff to add for description
-  
-  - name: APP_NAME
-    description: stuff to add for description

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"maps"
 	"serde"
 	"slices"
@@ -12,13 +13,30 @@ import (
 	"text/tabwriter"
 	"time"
 
+	_ "embed"
+
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/spf13/cobra"
+	"go.yaml.in/yaml/v2"
 )
 
 type SearchCmd = *cobra.Command
+
+//go:embed es_fields.yaml
+var fileByte []byte
+
+type EsFieldsConfig struct {
+	Name         string   `yaml:"name"`
+	DefaultValue []string `yaml:"default"`
+	ValidArgs    []string `yaml:"valid-args"`
+	Usage        string   `yaml:"description"`
+}
+
+type EsFields struct {
+	Fields []EsFieldsConfig `yaml:"fields"`
+}
 
 func searchCmdFunc(es *elasticsearch.TypedClient) SearchCmd {
 	cmd := &cobra.Command{
@@ -50,15 +68,23 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 
 	// Fields to do a term/terms search against an index
 	searchCmd.Flags().StringSlice("id", []string{}, "do a term/terms search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
-	searchCmd.Flags().StringSlice("LEVEL", []string{}, "do a term search for a LEVEL")
 
-	// searchCmd.RegisterFlagCompletionFunc("LEVEL", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-	// 	levels := []string{"DEBUG", "ERROR", "INFO"}
-	// 	return levels, cobra.ShellCompDirectiveNoFileComp
-	// })
-	searchCmd.RegisterFlagCompletionFunc("LEVEL", cobra.FixedCompletions([]string{"DEBUG", "ERROR", "INFO"}, cobra.ShellCompDirectiveNoFileComp))
+	// fileByte, err := os.ReadFile("es_fields.yaml")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-	searchCmd.Flags().StringSlice("APP_NAME", []string{}, "do a term search for an APP_NAME")
+	var e EsFields
+	err := yaml.Unmarshal(fileByte, &e)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, f := range e.Fields {
+		searchCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
+		searchCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
+	}
+
 	return searchCmd
 
 }
@@ -108,7 +134,7 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 
 	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sortMap)
 
-	if flags.Terms && flags.Id != nil {
+	if flags.Id != nil {
 		if q := BuildTermIdQuery(flags.Id); q != nil {
 			searchReq = searchReq.Query(q)
 		}
