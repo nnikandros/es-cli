@@ -129,6 +129,7 @@ func searchWithFlags(es *elasticsearch.TypedClient, indexName string, flags Sear
 	return r, nil
 }
 
+// query builder
 func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFlags) *search.Search {
 	sortMap := make(map[string]string)
 	if flags.Time {
