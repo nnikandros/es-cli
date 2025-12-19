@@ -23,7 +23,7 @@ func BuildTermIdQuery(ids []string) *types.Query {
 }
 
 // build a simple term/terms query for a field. PAss a field, and the value(s)
-func BuildTermLevelQuery(field string, values []string) *types.Query {
+func BuildTermsQuery(field string, values []string) *types.Query {
 
 	switch len(values) {
 	case 0:

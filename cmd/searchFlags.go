@@ -14,11 +14,11 @@ type SearchFlags struct {
 	Reverse        bool
 	Terms          bool
 	Id             []string
-	FieldsTermsMap EsFieldsConfig
+	FieldsTermsMap []EsFieldsConfig
+	Should         bool
+	Must           bool
+	Not            bool
 }
-
-// var validLevelStates = map[string]struct{}{"DEBUG": struct{}{}, "ERROR": struct{}{}, "INFO": struct{}{}}
-// var validLevelStates = []string{"DEBUG", "ERROR", "INFO"}
 
 func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 
@@ -35,22 +35,15 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 	terms, _ := cmd.Flags().GetBool("terms")
 	id, _ := cmd.Flags().GetStringSlice("id")
 
-	// o := make(map[string][]string)
-	var o EsFieldsConfig
+	o := make([]EsFieldsConfig, 0, len(e.Fields))
 	for _, f := range e.Fields {
 		valuesForField, _ := cmd.Flags().GetStringSlice(f.Name)
-		if len(valuesForField) != 0 {
-			o = EsFieldsConfig{Name: f.Name, Value: valuesForField}
-		}
-
+		o = append(o, EsFieldsConfig{Name: f.Name, Value: valuesForField})
 	}
 
-	// for _, l := range level {
-	// 	ok := slices.Contains(validLevelStates, l)
-	// 	if !ok {
-	// 		return SearchFlags{}, fmt.Errorf("level provided %v is not supported. levels supported %v", level, validLevelStates)
-	// 	}
-	// }
+	if len(o) > 1 {
+		return SearchFlags{}, fmt.Errorf("you have provided more than one term. Currently one is supported")
+	}
 
 	if !time && reverse {
 		return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
@@ -59,5 +52,3 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 	return SearchFlags{Size: resizeSize, Fields: fields, Time: time, Reverse: reverse, Tabular: tabular, Terms: terms, Id: id, FieldsTermsMap: o}, nil
 
 }
-
-// types.FieldAndFormat

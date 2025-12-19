@@ -72,18 +72,11 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 	// Fields to do a term/terms search against an index
 	searchCmd.Flags().StringSlice("id", []string{}, "do a term/terms search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
 
-	// fileByte, err := os.ReadFile("es_fields.yaml")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	err := yaml.Unmarshal(fileByte, &e)
 	if err != nil {
 		log.Fatal(err)
 	}
-	esFieldsMap := make(map[string]struct{})
 	for _, f := range e.Fields {
-		esFieldsMap[f.Name] = struct{}{}
 		searchCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
 		searchCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
 
@@ -146,7 +139,8 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 	}
 
 	if flags.Terms {
-		if q := BuildTermLevelQuery(flags.FieldsTermsMap.Name, flags.FieldsTermsMap.Value); q != nil {
+
+		if q := BuildTermsQuery(flags.FieldsTermsMap[0].Name, flags.FieldsTermsMap[0].Value); q != nil {
 			searchReq = searchReq.Query(q)
 		}
 	}
