@@ -9,9 +9,14 @@ Disclaimer: This project is WIP
 Currently the configuration assumes that the elasticsearch cluster is hosted on premise. Future versions could change that.
 
 ## Subcommands
-  Currently the `es` command has a few subcommands. Which subcommand has it's own flags.
+  Currently the `es` command has a few subcommands. Some subcomannds have their own subcommand and most of subcommands has it's own flags.
   The current subcommands are:
-  1. index
+  1. index. Has further subcommands 
+    - create 
+    - delete
+    - list
+    - clone
+
   2. count
   3. cluster
   4. search 
