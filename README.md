@@ -8,9 +8,17 @@ Disclaimer: This project is WIP
 
 Currently the configuration assumes that the elasticsearch cluster is hosted on premise. Future versions could change that.
 
-## Example of Commands
+## Subcommands
+  Currently the `es` command has a few subcommands. Which subcommand has it's own flags.
+  The current subcommands are:
+  1. index
+  2. count
+  3. cluster
+  4. search 
 
-- Display help `es --help`
+### Usage of Subcommands and Examples of flags
+Below you can find some commands. For displaying the commands we will assume that the binary is in directory in the PATH of your user.
+- Display helpful message: `es --help` or just `es`
 - Retrieve an index's mappings:
 
   ```bash
