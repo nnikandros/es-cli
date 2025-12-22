@@ -1,6 +1,6 @@
 # Elasticsearch CLI
 
-A cli tool to interact with elasticsearch indices and perform elasticsearch operations. This project grew out of the necessities of my work to interact with elasticsearch. If you like to compile it, you would need the serde git repo in the same dir as the es-cli and prefereably use a Go workspace. If you don't want to compile it, you will have to wait for a release of the binary.
+A cli tool to interact with elasticsearch indices and perform elasticsearch operations. This project grew out of the necessities of my work to interact with elasticsearch. Mostly we try to follow the Elasticsearch API as documented in [Elasticsearch API](https://www.elastic.co/docs/api/doc/elasticsearch/) If you like to compile it, you would need the serde git repo in the same dir as the es-cli and preferably use a Go workspace. If you don't want to compile it, you will have to wait for a release of the binary.
 
 Disclaimer: This project is WIP
 
