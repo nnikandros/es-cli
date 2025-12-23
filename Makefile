@@ -11,9 +11,10 @@ hello:
 	rm ./cmd/$(ES_FIELDS_YAML)
 
 build:
-	@cp $(ES_FIELDs_YAML) ./cmd/$(ES_FIELDS_YAML)
+	@cp $(ES_FIELDS_YAML) ./cmd/$(ES_FIELDS_YAML)
 	@go build -o ./bin/es
 	@mv ./bin/es $(HOME)/.local/bin
+	@rm ./cmd/$(ES_FIELDS_YAML)
 
 
 build-static:
