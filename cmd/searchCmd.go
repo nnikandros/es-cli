@@ -31,7 +31,7 @@ type EsFieldsConfig struct {
 	Name         string   `yaml:"name"`
 	DefaultValue []string `yaml:"default"`
 	ValidArgs    []string `yaml:"valid-args"`
-	Usage        string   `yaml:"description"`
+	Usage        string   `yaml:"usage"`
 	Value        []string
 }
 
