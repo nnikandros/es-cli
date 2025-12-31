@@ -5,7 +5,7 @@ import (
 )
 
 // For searching based on elasticsearch id use this one, since we have the build in IdsQuery
-func BuildTermIdQuery(ids []string) *types.Query {
+func BuildIdQuery(ids []string) *types.Query {
 
 	switch len(ids) {
 	case 0:

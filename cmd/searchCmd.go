@@ -64,13 +64,12 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
 	searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest first")
-	// searchCmd.Flags().BoolP("reverse", "r", false, "reverse order when sorting. So enabling will show oldest first")
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
 
 	searchCmd.Flags().Bool("terms", false, "do a term/terms search.")
 
 	// Fields to do a term/terms search against an index
-	searchCmd.Flags().StringSlice("id", []string{}, "do a term/terms search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
+	searchCmd.Flags().StringSlice("id", []string{}, "do a search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
 
 	err := yaml.Unmarshal(fileByte, &e)
 	if err != nil {
@@ -133,7 +132,7 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sortMap)
 
 	if flags.Id != nil {
-		if q := BuildTermIdQuery(flags.Id); q != nil {
+		if q := BuildIdQuery(flags.Id); q != nil {
 			searchReq = searchReq.Query(q)
 		}
 	}
