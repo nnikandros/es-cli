@@ -1,7 +1,7 @@
 package test
 
 import (
-	"escobra/cmd"
+	"strings"
 	"testing"
 )
 
@@ -15,8 +15,7 @@ func TestJoinStrings(t *testing.T) {
 	t.Run("many indices", func(t *testing.T) {
 		s := []string{"first-index", "second-index", "third-*"}
 		expextedResult := "first-index,second-index,third-*"
-		result := cmd.ParseArgsIntoSingleString(s)
-
+		result := strings.Join(s, ",")
 		if result != expextedResult {
 			t.Errorf("got:%v but expected: %v", result, expextedResult)
 		}
@@ -25,7 +24,7 @@ func TestJoinStrings(t *testing.T) {
 	t.Run("one index", func(t *testing.T) {
 		s := []string{"first-index"}
 		expResult := "first-index"
-		result := cmd.ParseArgsIntoSingleString(s)
+		result := strings.Join(s, ",")
 		if result != expResult {
 			t.Errorf("got:%v but expected: %v", result, expResult)
 		}

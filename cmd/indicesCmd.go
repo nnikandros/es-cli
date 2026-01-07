@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"bufio"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -69,21 +68,8 @@ func IndexCmdFunc(es *elasticsearch.TypedClient) IndexCmd {
 
 func runIndicesCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		// if len(args) == 0 {
-		// 	return fmt.Errorf("please provide at least one index name")
-		// }
-		var index string
-		var indexList []string
-		if len(args) > 0 {
-			index = ParseArgsIntoSingleString(args)
-		} else {
-			scanner := bufio.NewScanner(cmd.InOrStdin())
-			for scanner.Scan() {
-				// index = scanner.Text()
-				indexList = append(indexList, scanner.Text())
-			}
-			index = ParseArgsIntoSingleString(indexList)
-		}
+
+		index := ParseArgsIntoString(cmd, args)
 
 		mappings, _ := cmd.Flags().GetBool("mappings")
 		settings, _ := cmd.Flags().GetBool("settings")

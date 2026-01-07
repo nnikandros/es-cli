@@ -69,7 +69,7 @@ func runSearchCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		if err != nil {
 			return fmt.Errorf("at parsing flags %w", err)
 		}
-		indexName := ParseArgsIntoSingleString(args)
+		indexName := strings.Join(args, ",")
 
 		r, err := searchWithFlags(es, indexName, ParsedFlags)
 		if err != nil {

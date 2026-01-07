@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"text/tabwriter"
 	"time"
 
@@ -37,7 +38,7 @@ func addCountFlags(countCmd *cobra.Command) *cobra.Command {
 func runCountCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 
-		index := ParseArgsIntoSingleString(args)
+		index := strings.Join(args, ",")
 
 		tabular, _ := cmd.Flags().GetBool("tab")
 
