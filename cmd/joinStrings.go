@@ -12,9 +12,8 @@ func IsIndexNameValid(index string) bool {
 
 }
 
-func ParseArgsIntoString(cmd *cobra.Command, args []string) string {
-	var index string
-	// var indexList []string
+// Parse args into a single string. If we proved then we simply join them. If we don't provide then we read them from  Stdin
+func ParseArgsIntoString(cmd *cobra.Command, args []string) (index string) {
 	indexList := make([]string, 0)
 
 	if len(args) > 0 {
@@ -27,5 +26,5 @@ func ParseArgsIntoString(cmd *cobra.Command, args []string) string {
 		index = strings.Join(indexList, ",")
 	}
 
-	return index
+	return
 }
