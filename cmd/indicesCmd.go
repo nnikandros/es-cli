@@ -73,13 +73,16 @@ func runIndicesCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		// 	return fmt.Errorf("please provide at least one index name")
 		// }
 		var index string
+		var indexList []string
 		if len(args) > 0 {
 			index = ParseArgsIntoSingleString(args)
 		} else {
 			scanner := bufio.NewScanner(cmd.InOrStdin())
-			if scanner.Scan() {
-				index = scanner.Text()
+			for scanner.Scan() {
+				// index = scanner.Text()
+				indexList = append(indexList, scanner.Text())
 			}
+			index = ParseArgsIntoSingleString(indexList)
 		}
 
 		mappings, _ := cmd.Flags().GetBool("mappings")
