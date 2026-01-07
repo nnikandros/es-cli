@@ -9,20 +9,26 @@ Disclaimer: This project is WIP
 Currently the configuration assumes that the elasticsearch cluster is hosted on premise. Future versions could change that.
 
 ## Subcommands
-  Currently the `es` command has a few subcommands. Some subcomannds have their own subcommand and most of subcommands has it's own flags.
-  The current subcommands are:
-  1. index. Has further subcommands 
-    - create 
+
+Currently the `es` command has a few subcommands. Some subcomannds have their own subcommand and most of subcommands has it's own flags.
+The current subcommands are:
+
+1. index. Has further subcommands:
+
+
+    - create
     - delete
     - list
     - clone
 
-  2. count
-  3. cluster
-  4. search 
+2. count
+3. cluster
+4. search
 
 ### Usage of Subcommands and Examples of flags
+
 Below you can find some commands. For displaying the commands we will assume that the binary is in directory in the PATH of your user.
+
 - Display helpful message: `es --help` or just `es`
 - Retrieve an index's mappings:
 
@@ -37,11 +43,14 @@ Below you can find some commands. For displaying the commands we will assume tha
   ```
 
 - Create an index with provided settings and mappings. Usually I store the settings and mappings in a directory as json files, for example for the index <some-index> I have
+
   ```bash
   /elasticsearch/indices/some-index/mappings.json
   /elasticsearch/indices/some-index/settings.json
   ```
+
   To create an index we use the flag --directory (-d) with the path of the directory
+
   ```bash
   es index create --directory /elasticsearch/indices/some-index
   ```
