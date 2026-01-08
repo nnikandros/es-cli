@@ -115,13 +115,13 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 	}
 
 	if flags.Terms && flags.LEVEL != nil {
-		if q := BuildTermLevelQuery("LEVEL", flags.LEVEL); q != nil {
+		if q := BuildTermLevelQueryV2("LEVEL", flags.LEVEL); q != nil {
 			searchReq = searchReq.Query(q)
 		}
 	}
 
 	if flags.Terms && flags.APP_NAME != nil {
-		if q := BuildTermLevelQuery("APP_NAME", flags.APP_NAME); q != nil {
+		if q := BuildTermLevelQueryV2("APP_NAME", flags.APP_NAME); q != nil {
 			searchReq = searchReq.Query(q)
 		}
 	}

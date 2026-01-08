@@ -1,21 +1,46 @@
 package test
 
 import (
+	"encoding/json"
+	"escobra/cmd"
 	"fmt"
+	"log"
 	"testing"
 )
+
+func hello(a ...int) {
+
+	fmt.Println(a)
+
+}
 
 func TestQueryBuilders(t *testing.T) {
 	//
 
-	type L struct {
-		x []string
+	// q := cmd.BuildTermLevelQuery("LEVEL", []string{"first,second"})
+	// // q2 := cmd.BuildTermLevelQuery("APP_NAME", []string{"first app"})
+
+	// b, err := json.Marshal(q)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	f := cmd.BuildTermLevelQueryV2("LEVEL", []string{"first", "second"})
+	f2 := cmd.BuildTermLevelQueryV2("LEVEL", []string{"first", "second"})
+
+	// b2, err := json.Marshal(f)
+
+	m := cmd.MustQuery(f, f2)
+
+	// if err := json.NewEncoder(os.Stdout).Encode(m); err != nil {
+	// 	log.Fatal(err)
+	// }
+
+	b, err := json.MarshalIndent(m, "", " ")
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	l := L{}
-
-	for _, i := range l.x {
-		fmt.Println(i)
-	}
+	fmt.Printf("%s", b)
 
 }

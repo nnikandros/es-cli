@@ -50,3 +50,66 @@ func BuildTermLevelQuery(field string, values []string) *types.Query {
 		return query
 	}
 }
+
+func BuildTermLevelQueryV2(field string, values []string) *types.Query {
+
+	switch len(values) {
+	case 0:
+		return nil
+
+	default:
+		m := make(map[string]types.TermsQueryField)
+		m[field] = values
+
+		query := &types.Query{
+			Terms: &types.TermsQuery{TermsQuery: m},
+		}
+
+		return query
+	}
+}
+
+func BuildFilterQuery(field string, values []string) *types.Query {
+	q := &types.Query{}
+	b := &types.BoolQuery{}
+
+	m := make(map[string]types.TermsQueryField)
+	m[field] = values
+
+	query := types.Query{
+		Terms: &types.TermsQuery{TermsQuery: m},
+	}
+
+	f := []types.Query{query}
+
+	b.Filter = f
+	q.Bool = b
+	return q
+
+}
+
+func MustQuery(q1 *types.Query, q2 *types.Query) *types.Query {
+	q := &types.Query{}
+	b := &types.BoolQuery{}
+
+	m := []types.Query{*q1, *q2}
+	b.Must = m
+
+	q.Bool = b
+
+	return q
+
+}
+
+func ShouldQuery(q1 *types.Query, q2 *types.Query) *types.Query {
+	q := &types.Query{}
+	b := &types.BoolQuery{}
+
+	s := []types.Query{*q1, *q2}
+	b.Should = s
+
+	q.Bool = b
+
+	return q
+
+}
