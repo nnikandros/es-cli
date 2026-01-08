@@ -57,19 +57,6 @@ func pingClusterCmdFunc(es *elasticsearch.TypedClient) PingSubCmd {
 
 }
 
-func infoClusterCmdFunc(es *elasticsearch.TypedClient) InfoSubCmd {
-	cmd := &cobra.Command{
-		Use:   "info",
-		Short: "info",
-		Long:  "info info",
-		RunE:  runInfoClusterSubcmd(es),
-		Args:  cobra.NoArgs,
-	}
-
-	return cmd
-
-}
-
 func nodesClusterCmdFunc(es *elasticsearch.TypedClient) NodesSubCmd {
 	cmd := &cobra.Command{
 		Use:   "nodes",
@@ -104,29 +91,6 @@ func runPingClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 
 func runCusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		return nil
-	}
-
-}
-
-func runInfoClusterSubcmd(es *elasticsearch.TypedClient) RunEFunc {
-	return func(cmd *cobra.Command, args []string) error {
-		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-
-		r, err := es.Cluster.Info("_all").Do(ctx)
-
-		if err != nil {
-			return fmt.Errorf("at getting cluster info %w", err)
-		}
-
-		b, err := json.Marshal(r)
-		if err != nil {
-			return serde.SerializingError(err)
-		}
-
-		fmt.Fprintf(cmd.OutOrStdout(), "%s", b)
-
 		return nil
 	}
 
