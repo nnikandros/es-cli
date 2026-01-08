@@ -4,6 +4,7 @@ fields:
       - INFO
       - ERROR
       - DEBUG
+      - WARNING
     usage: "do a terms search for LEVEL"
   
   - name: APP_NAME
