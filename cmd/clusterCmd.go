@@ -33,7 +33,7 @@ func ClusterCmdFunc(es *elasticsearch.TypedClient) ClusterCmd {
 	clusterCmd := clusterCmdFunc(es)
 
 	pingSubCmd := pingClusterCmdFunc(es)
-	infoSubCmd := infoClusterCmdFunc(es)
+	infoSubCmd := addInfoClusterFlags(infoClusterCmdFunc(es))
 
 	nodesSubCmd := nodesClusterCmdFunc(es)
 

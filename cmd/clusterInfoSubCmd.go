@@ -24,19 +24,31 @@ func infoClusterCmdFunc(es *elasticsearch.TypedClient) InfoSubCmd {
 
 }
 
+func addInfoClusterFlags(infoSub InfoSubCmd) InfoSubCmd {
+
+	infoSub.Flags().StringP("target", "t", "_all", "target for cluster information")
+
+	infoSub.RegisterFlagCompletionFunc("target", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+		levels := []string{"_all", "http", "ingest", "thread_pool", "script"}
+		return levels, cobra.ShellCompDirectiveNoFileComp
+	})
+
+	return infoSub
+}
+
 func runInfoClusterSubcmd(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
-		r, err := es.Cluster.Info("_all").Do(ctx)
+		target, _ := cmd.Flags().GetString("target")
+		r, err := es.Cluster.Info(target).Do(ctx)
 
 		if err != nil {
 			return fmt.Errorf("at getting cluster info %w", err)
 		}
 
-		err = json.NewEncoder(cmd.OutOrStdout()).Encode(r)
-		if err != nil {
+		if err = json.NewEncoder(cmd.OutOrStdout()).Encode(r); err != nil {
 			return serde.SerializingError(err)
 		}
 
