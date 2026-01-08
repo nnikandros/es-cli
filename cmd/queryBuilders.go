@@ -101,12 +101,36 @@ func MustQuery(q1 *types.Query, q2 *types.Query) *types.Query {
 
 }
 
+func MustQueryV2(queries []types.Query) *types.Query {
+	q := &types.Query{}
+	b := &types.BoolQuery{}
+
+	b.Must = queries
+
+	q.Bool = b
+
+	return q
+
+}
+
 func ShouldQuery(q1 *types.Query, q2 *types.Query) *types.Query {
 	q := &types.Query{}
 	b := &types.BoolQuery{}
 
 	s := []types.Query{*q1, *q2}
 	b.Should = s
+
+	q.Bool = b
+
+	return q
+
+}
+
+func ShouldQueryV2(queries []types.Query) *types.Query {
+	q := &types.Query{}
+	b := &types.BoolQuery{}
+
+	b.Should = queries
 
 	q.Bool = b
 

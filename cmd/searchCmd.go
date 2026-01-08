@@ -42,6 +42,7 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
+	searchCmd.Flags().Bool("filter", false, "do a filter search")
 	searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest first")
 	// searchCmd.Flags().BoolP("reverse", "r", false, "reverse order when sorting. So enabling will show oldest first")
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
