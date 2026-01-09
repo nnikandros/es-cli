@@ -88,6 +88,17 @@ func BuildFilterQuery(field string, values []string) *types.Query {
 
 }
 
+// add multiple term queries to  create a filter
+func BuildFilterAndQuery(queries []types.Query) *types.Query {
+	q := &types.Query{}
+	b := &types.BoolQuery{}
+
+	b.Filter = queries
+
+	q.Bool = b
+	return q
+}
+
 func MustQuery(q1 *types.Query, q2 *types.Query) *types.Query {
 	q := &types.Query{}
 	b := &types.BoolQuery{}
@@ -137,3 +148,15 @@ func ShouldQueryV2(queries []types.Query) *types.Query {
 	return q
 
 }
+
+func RangeQuery(field string, gte, lte string) map[string]types.RangeQuery {
+	r := map[string]types.RangeQuery{}
+	n := "now"
+	now := &n
+	r["TIMESTMAP"] = types.DateRangeQuery{Gte: now}
+
+	return r
+
+}
+
+// types.DateRangeQuery
