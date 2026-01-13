@@ -67,7 +67,8 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
 	// searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest last")
-	searchCmd.Flags().String("sort-by", "", "sort by given date field, newest first")
+	searchCmd.Flags().StringSlice("sort-by", []string{}, "sort by given date field, newest first")
+	searchCmd.Flags().StringP("reverse", "r", "", "reverse the order of results, i.e. show newest in the bottom")
 
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
 
@@ -135,33 +136,21 @@ func searchWithFlags(es *elasticsearch.TypedClient, indexName string, flags Sear
 
 // query builder
 func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFlags) *search.Search {
-	// sortMap := make(map[string]string)
-	// SortOptions  map[string]FieldSort
 	sort := []types.SortCombinations{}
 	if len(flags.SortBy) > 0 {
 
-		// sortMap[flags.SortBy] = "asc"
-		// sortMap = "TIMESTAMP:asc"
-		// sort := []types.SortCombinations{types.SortOptions{}}
-
-		sort = []types.SortCombinations{
-			types.SortOptions{
+		for _, datetimeField := range flags.SortBy {
+			sort = append(sort, types.SortOptions{
 				SortOptions: map[string]types.FieldSort{
-					flags.SortBy: {
+					datetimeField: {
 						Order: &sortorder.Desc,
 					},
 				},
-			},
+			})
 		}
+
 	}
-	// data, _ := json.Marshal(sort)
-	// fmt.Printf("%s", data)
 	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sort...)
-	data, err := json.Marshal(searchReq)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("%s", data)
 
 	if flags.Id != nil {
 		if q := BuildIdQuery(flags.Id); q != nil {
@@ -194,6 +183,12 @@ func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 
 		for _, hit := range r.Hits.Hits {
 			results = append(results, hit.Fields)
+		}
+
+		if flags.Reverse {
+
+			results = Reverse(results)
+
 		}
 
 		if len(results) == 0 {

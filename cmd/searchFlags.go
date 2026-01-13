@@ -11,7 +11,7 @@ type SearchFlags struct {
 	Fields         []string
 	Tabular        bool
 	Time           bool
-	SortBy         string
+	SortBy         []string
 	Reverse        bool
 	Terms          bool
 	Id             []string
@@ -30,7 +30,7 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 	resizeSize := min(size, 10000)
 
 	time, _ := cmd.Flags().GetBool("time")
-	sortBy, _ := cmd.Flags().GetString("sort-by")
+	sortBy, _ := cmd.Flags().GetStringSlice("sort-by")
 	reverse, _ := cmd.Flags().GetBool("reverse")
 	tabular, _ := cmd.Flags().GetBool("tab")
 
