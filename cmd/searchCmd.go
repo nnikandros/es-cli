@@ -18,6 +18,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 	"github.com/spf13/cobra"
 	"go.yaml.in/yaml/v2"
 )
@@ -66,15 +67,7 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
 	// searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest last")
-	searchCmd.Flags().String("sort-by", "", "sort by given date field, newest last")
-
-	for _, f := range e.Fields {
-		if f.Date {
-			sortByArgs = append(sortByArgs, f.Name)
-		}
-
-	}
-	searchCmd.RegisterFlagCompletionFunc("sort-by", cobra.FixedCompletions(sortByArgs, cobra.ShellCompDirectiveNoFileComp))
+	searchCmd.Flags().String("sort-by", "", "sort by given date field, newest first")
 
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
 
@@ -91,9 +84,14 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 		if !f.Date {
 			searchCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
 			searchCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
+		} else {
+			sortByArgs = append(sortByArgs, f.Name)
+
 		}
 
 	}
+
+	searchCmd.RegisterFlagCompletionFunc("sort-by", cobra.FixedCompletions(sortByArgs, cobra.ShellCompDirectiveNoFileComp))
 
 	return searchCmd
 
@@ -137,13 +135,33 @@ func searchWithFlags(es *elasticsearch.TypedClient, indexName string, flags Sear
 
 // query builder
 func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFlags) *search.Search {
-	sortMap := make(map[string]string)
+	// sortMap := make(map[string]string)
+	// SortOptions  map[string]FieldSort
+	sort := []types.SortCombinations{}
 	if len(flags.SortBy) > 0 {
 
-		sortMap[flags.SortBy] = "asc"
-	}
+		// sortMap[flags.SortBy] = "asc"
+		// sortMap = "TIMESTAMP:asc"
+		// sort := []types.SortCombinations{types.SortOptions{}}
 
-	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sortMap)
+		sort = []types.SortCombinations{
+			types.SortOptions{
+				SortOptions: map[string]types.FieldSort{
+					flags.SortBy: {
+						Order: &sortorder.Desc,
+					},
+				},
+			},
+		}
+	}
+	// data, _ := json.Marshal(sort)
+	// fmt.Printf("%s", data)
+	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sort...)
+	data, err := json.Marshal(searchReq)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%s", data)
 
 	if flags.Id != nil {
 		if q := BuildIdQuery(flags.Id); q != nil {
