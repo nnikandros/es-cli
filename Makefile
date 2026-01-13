@@ -28,7 +28,7 @@ test:
 	@go test ./test/
 
  
- check-var:
+check-var:
 	@if [ -z "$(ES_FIELDS_YAML)" ]; then \
 		echo "Error: MY_VAR is not set"; \
 		exit 1; \

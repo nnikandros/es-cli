@@ -33,6 +33,7 @@ type EsFieldsConfig struct {
 	ValidArgs    []string `yaml:"valid-args"`
 	Usage        string   `yaml:"usage"`
 	Value        []string
+	Date         bool `yaml:"date"`
 }
 
 type EsFields struct {
@@ -60,10 +61,21 @@ es search <index-1 index-2> -s 100
 }
 
 func addSearchFlags(searchCmd SearchCmd) SearchCmd {
+	var sortByArgs []string
 
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
-	searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest first")
+	searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest last")
+	searchCmd.Flags().String("sort-by", "", "sort by given date field, newest last")
+
+	for _, f := range e.Fields {
+		if f.Date {
+			sortByArgs = append(sortByArgs, f.Name)
+		}
+
+	}
+	searchCmd.RegisterFlagCompletionFunc("sort-by", cobra.FixedCompletions(sortByArgs, cobra.ShellCompDirectiveNoFileComp))
+
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
 
 	searchCmd.Flags().Bool("terms", false, "do a term/terms search.")

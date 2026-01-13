@@ -9,3 +9,7 @@ fields:
   
   - name: APP_NAME
     usage: "do a term search with term APP_NAME"
+  
+  - name: TIMESTAMP
+    usage: "timestamp field"
+    date: true
