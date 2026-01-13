@@ -13,3 +13,7 @@ fields:
   - name: TIMESTAMP
     usage: "timestamp field"
     date: true
+
+  - name: PUBLICATION_DATE
+    usage: "dummy publication date"
+    date: true

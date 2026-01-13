@@ -65,7 +65,7 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
-	searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest last")
+	// searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest last")
 	searchCmd.Flags().String("sort-by", "", "sort by given date field, newest last")
 
 	for _, f := range e.Fields {
@@ -88,8 +88,10 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 		log.Fatal(err)
 	}
 	for _, f := range e.Fields {
-		searchCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
-		searchCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
+		if !f.Date {
+			searchCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
+			searchCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
+		}
 
 	}
 
@@ -136,9 +138,9 @@ func searchWithFlags(es *elasticsearch.TypedClient, indexName string, flags Sear
 // query builder
 func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFlags) *search.Search {
 	sortMap := make(map[string]string)
-	if flags.Time {
+	if len(flags.SortBy) > 0 {
 
-		sortMap["TIMESTAMP"] = "asc"
+		sortMap[flags.SortBy] = "asc"
 	}
 
 	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sortMap)
