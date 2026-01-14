@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/spf13/cobra"
 )
 
@@ -29,7 +27,6 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 
 	resizeSize := min(size, 10000)
 
-	time, _ := cmd.Flags().GetBool("time")
 	sortBy, _ := cmd.Flags().GetStringSlice("sort-by")
 	reverse, _ := cmd.Flags().GetBool("reverse")
 	tabular, _ := cmd.Flags().GetBool("tab")
@@ -46,11 +43,11 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 	// if len(o) > 1 {
 	// 	return SearchFlags{}, fmt.Errorf("you have provided more than one term. Currently one is supported")
 	// }
+	// To check the condition
+	// if !sortBy && reverse {
+	// 	return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
+	// }
 
-	if !time && reverse {
-		return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
-	}
-
-	return SearchFlags{Size: resizeSize, Fields: fields, Time: time, Reverse: reverse, Tabular: tabular, Terms: terms, Id: id, FieldsTermsMap: o, SortBy: sortBy}, nil
+	return SearchFlags{Size: resizeSize, Fields: fields, Reverse: reverse, Tabular: tabular, Terms: terms, Id: id, FieldsTermsMap: o, SortBy: sortBy}, nil
 
 }

@@ -68,7 +68,7 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
 	// searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest last")
 	searchCmd.Flags().StringSlice("sort-by", []string{}, "sort by given date field, newest first")
-	searchCmd.Flags().StringP("reverse", "r", "", "reverse the order of results, i.e. show newest in the bottom")
+	searchCmd.Flags().BoolP("reverse", "r", false, "reverse the order of results, i.e. show newest in the bottom")
 
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
 
@@ -115,8 +115,6 @@ func runSearchCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		if err = processResponse(r, ParsedFlags, cmd.OutOrStdout()); err != nil {
 			return fmt.Errorf("at processing the response %w", err)
 		}
-
-		// fmt.Fprintf(cmd.OutOrStdout(), "%s\n", b)
 
 		return nil
 	}
@@ -196,13 +194,10 @@ func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 		}
 
 		if !flags.Tabular {
-			b, err := json.MarshalIndent(results, "", " ")
-			if err != nil {
+			if err := json.NewEncoder(w).Encode(results); err != nil {
 				return serde.SerializingError(err)
 			}
 
-			fmt.Fprintf(w, "%s", b)
-			return nil
 		}
 
 		if err := processTab(results, w); err != nil {
@@ -212,12 +207,9 @@ func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 		return nil
 	}
 
-	b, err := json.MarshalIndent(r, "", " ")
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(r); err != nil {
 		return serde.SerializingError(err)
 	}
-
-	fmt.Fprintf(w, "%s", b)
 
 	return nil
 
