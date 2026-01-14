@@ -24,13 +24,16 @@ Currently the configuration assumes that the elasticsearch cluster is hosted on 
   ```
 
 - Create an index with provided settings and mappings. Usually I store the settings and mappings in a directory as json files, for example for the index <some-index> I have
+
   ```bash
   /elasticsearch/indices/some-index/mappings.json
   /elasticsearch/indices/some-index/settings.json
   ```
+
   To create an index we use the flag --directory (-d) with the path of the directory
+
   ```bash
-  es index create --directory /elasticsearch/indices/some-index
+  es index create <new-index> --directory /elasticsearch/indices/some-index
   ```
 
 - Delete an index
