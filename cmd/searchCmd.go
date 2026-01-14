@@ -50,9 +50,10 @@ func searchCmdFunc(es *elasticsearch.TypedClient) SearchCmd {
 		Long:  "Running a search query against an index\nThe arguments can be an index a list of indexes separated by space or index name with wildcard. Can also be _all to search all indices",
 		RunE:  runSearchCmdFunc(es),
 		Example: `es search <test-index-*>
-es search <index-1 index-2 >
-es search <index-1,index-2> --size 100
-es search <index-1 index-2> -s 100
+es search <index-1 index-2 > (Do an empty search against the provided two indices)
+es search <index-1,index-2> --size 100 (Do an empty search against the provided two indices but increase the size of the results to 100)
+es search <index-1 index-2> -s 100 (Do an empty search against the provided two indices but increase the size of the results to 100 but in shorthand notation)
+es search <index> --sort-by TIMESTAMP (Do an empty search but sort the results with newsest on top based on the the field TIMESTAMP)
 `,
 		ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
 	}
