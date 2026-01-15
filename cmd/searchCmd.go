@@ -53,7 +53,7 @@ func searchCmdFunc(es *elasticsearch.TypedClient) SearchCmd {
 es search <index-1 index-2 > (Do an empty search against the provided two indices)
 es search <index-1,index-2> --size 100 (Do an empty search against the provided two indices but increase the size of the results to 100)
 es search <index-1 index-2> -s 100 (Do an empty search against the provided two indices but increase the size of the results to 100 but in shorthand notation)
-es search <index> --sort-by TIMESTAMP (Do an empty search but sort the results with newsest on top based on the the field TIMESTAMP)
+es search <index> --sort-by TIMESTAMP (Do an empty search but sort the results with newsest on top based on the the field TIMESTAMP. If u want autocompletion you have to add it on the es_fields.yaml)
 `,
 		ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
 	}
@@ -67,7 +67,6 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
-	// searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest last")
 	searchCmd.Flags().StringSlice("sort-by", []string{}, "sort by given date field, newest first")
 	searchCmd.Flags().BoolP("reverse", "r", false, "reverse the order of results, i.e. show newest in the bottom")
 
@@ -75,7 +74,6 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 
 	searchCmd.Flags().Bool("terms", false, "do a term/terms search.")
 
-	// Fields to do a term/terms search against an index
 	searchCmd.Flags().StringSlice("id", []string{}, "do a search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
 
 	err := yaml.Unmarshal(fileByte, &e)
@@ -268,5 +266,18 @@ func KeysSorted(m map[string][]string) []string {
 	slices.Sort(keys)
 
 	return keys
+
+}
+
+func Watcher(w io.Writer) {
+
+	ticker := time.Tick(15 * time.Second)
+
+	for {
+		select {
+		case <-ticker:
+
+		}
+	}
 
 }
