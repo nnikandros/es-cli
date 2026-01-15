@@ -1,26 +1,23 @@
 package cmd
 
 import (
-	"fmt"
-	"slices"
-
 	"github.com/spf13/cobra"
 )
 
 type SearchFlags struct {
-	Size     int
-	Fields   []string
-	Tabular  bool
-	Time     bool
-	Reverse  bool
-	Terms    bool
-	Id       []string
-	LEVEL    []string
-	APP_NAME []string
+	Size           int
+	Fields         []string
+	Tabular        bool
+	Time           bool
+	SortBy         []string
+	Reverse        bool
+	Terms          bool
+	Id             []string
+	FieldsTermsMap []EsFieldsConfig
+	Should         bool
+	Must           bool
+	Not            bool
 }
-
-// var validLevelStates = map[string]struct{}{"DEBUG": struct{}{}, "ERROR": struct{}{}, "INFO": struct{}{}}
-var validLevelStates = []string{"DEBUG", "ERROR", "INFO"}
 
 func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 
@@ -30,28 +27,27 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 
 	resizeSize := min(size, 10000)
 
-	time, _ := cmd.Flags().GetBool("time")
+	sortBy, _ := cmd.Flags().GetStringSlice("sort-by")
 	reverse, _ := cmd.Flags().GetBool("reverse")
 	tabular, _ := cmd.Flags().GetBool("tab")
 
 	terms, _ := cmd.Flags().GetBool("terms")
 	id, _ := cmd.Flags().GetStringSlice("id")
-	level, _ := cmd.Flags().GetStringSlice("LEVEL")
-	app_name, _ := cmd.Flags().GetStringSlice("APP_NAME")
 
-	for _, l := range level {
-		ok := slices.Contains(validLevelStates, l)
-		if !ok {
-			return SearchFlags{}, fmt.Errorf("level provided %v is not supported. levels supported %v", level, validLevelStates)
-		}
+	o := make([]EsFieldsConfig, 0, len(e.Fields))
+	for _, f := range e.Fields {
+		valuesForField, _ := cmd.Flags().GetStringSlice(f.Name)
+		o = append(o, EsFieldsConfig{Name: f.Name, Value: valuesForField})
 	}
 
-	if !time && reverse {
-		return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
-	}
+	// if len(o) > 1 {
+	// 	return SearchFlags{}, fmt.Errorf("you have provided more than one term. Currently one is supported")
+	// }
+	// To check the condition
+	// if !sortBy && reverse {
+	// 	return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
+	// }
 
-	return SearchFlags{Size: resizeSize, Fields: fields, Time: time, Reverse: reverse, Tabular: tabular, Terms: terms, Id: id, LEVEL: level, APP_NAME: app_name}, nil
+	return SearchFlags{Size: resizeSize, Fields: fields, Reverse: reverse, Tabular: tabular, Terms: terms, Id: id, FieldsTermsMap: o, SortBy: sortBy}, nil
 
 }
-
-// types.FieldAndFormat

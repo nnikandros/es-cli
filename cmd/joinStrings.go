@@ -12,6 +12,16 @@ func IsIndexNameValid(index string) bool {
 
 }
 
+func Reverse[T any](v []T) []T {
+
+	for i, j := 0, len(v)-1; i < j; i, j = i+1, j-1 {
+
+		v[i], v[j] = v[j], v[i]
+	}
+	return v
+
+}
+
 // Parse args into a single string. Usually (Always?) args for the es cli are index names. If we provide args then we simply join them. If we don't provide then we read them from  Stdin and  join them with a comma.
 func ParseArgsIntoString(cmd *cobra.Command, args []string) (index string) {
 	indexList := make([]string, 0)

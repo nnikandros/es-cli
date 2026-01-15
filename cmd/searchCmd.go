@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"maps"
 	"serde"
 	"slices"
@@ -12,13 +13,35 @@ import (
 	"text/tabwriter"
 	"time"
 
+	_ "embed"
+
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 	"github.com/spf13/cobra"
+	"go.yaml.in/yaml/v2"
 )
 
 type SearchCmd = *cobra.Command
+
+//go:embed es_fields.yaml
+var fileByte []byte
+
+type EsFieldsConfig struct {
+	Name         string   `yaml:"name"`
+	DefaultValue []string `yaml:"default"`
+	ValidArgs    []string `yaml:"valid-args"`
+	Usage        string   `yaml:"usage"`
+	Value        []string
+	Date         bool `yaml:"date"`
+}
+
+type EsFields struct {
+	Fields []EsFieldsConfig `yaml:"fields"`
+}
+
+var e EsFields
 
 func searchCmdFunc(es *elasticsearch.TypedClient) SearchCmd {
 	cmd := &cobra.Command{
@@ -27,9 +50,10 @@ func searchCmdFunc(es *elasticsearch.TypedClient) SearchCmd {
 		Long:  "Running a search query against an index\nThe arguments can be an index a list of indexes separated by space or index name with wildcard. Can also be _all to search all indices",
 		RunE:  runSearchCmdFunc(es),
 		Example: `es search <test-index-*>
-es search <index-1 index-2 >
-es search <index-1,index-2> --size 100
-es search <index-1 index-2> -s 100
+es search <index-1 index-2 > (Do an empty search against the provided two indices)
+es search <index-1,index-2> --size 100 (Do an empty search against the provided two indices but increase the size of the results to 100)
+es search <index-1 index-2> -s 100 (Do an empty search against the provided two indices but increase the size of the results to 100 but in shorthand notation)
+es search <index> --sort-by TIMESTAMP (Do an empty search but sort the results with newsest on top based on the the field TIMESTAMP. If u want autocompletion you have to add it on the es_fields.yaml)
 `,
 		ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
 	}
@@ -39,25 +63,36 @@ es search <index-1 index-2> -s 100
 }
 
 func addSearchFlags(searchCmd SearchCmd) SearchCmd {
+	var sortByArgs []string
 
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")
 	searchCmd.Flags().StringSliceP("fields", "f", []string{}, "source  fields to return")
-	searchCmd.Flags().BoolP("time", "t", false, "sort by time, newest first")
-	// searchCmd.Flags().BoolP("reverse", "r", false, "reverse order when sorting. So enabling will show oldest first")
+	searchCmd.Flags().StringSlice("sort-by", []string{}, "sort by given date field, newest first")
+	searchCmd.Flags().BoolP("reverse", "r", false, "reverse the order of results, i.e. show newest in the bottom")
+
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
 
 	searchCmd.Flags().Bool("terms", false, "do a term/terms search.")
 
-	// Fields to do a term/terms search against an index
-	searchCmd.Flags().StringSlice("id", []string{}, "do a term/terms search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
-	searchCmd.Flags().StringSlice("LEVEL", []string{}, "do a term search for a LEVEL")
+	searchCmd.Flags().StringSlice("id", []string{}, "do a search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
 
-	searchCmd.RegisterFlagCompletionFunc("LEVEL", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
-		levels := []string{"DEBUG", "ERROR", "INFO"}
-		return levels, cobra.ShellCompDirectiveNoFileComp
-	})
+	err := yaml.Unmarshal(fileByte, &e)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for _, f := range e.Fields {
+		if !f.Date {
+			searchCmd.Flags().StringSlice(f.Name, f.DefaultValue, f.Usage)
+			searchCmd.RegisterFlagCompletionFunc(f.Name, cobra.FixedCompletions(f.ValidArgs, cobra.ShellCompDirectiveNoFileComp))
+		} else {
+			sortByArgs = append(sortByArgs, f.Name)
 
-	searchCmd.Flags().StringSlice("APP_NAME", []string{}, "do a term search for an APP_NAME")
+		}
+
+	}
+
+	searchCmd.RegisterFlagCompletionFunc("sort-by", cobra.FixedCompletions(sortByArgs, cobra.ShellCompDirectiveNoFileComp))
+
 	return searchCmd
 
 }
@@ -81,8 +116,6 @@ func runSearchCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return fmt.Errorf("at processing the response %w", err)
 		}
 
-		// fmt.Fprintf(cmd.OutOrStdout(), "%s\n", b)
-
 		return nil
 	}
 }
@@ -99,29 +132,33 @@ func searchWithFlags(es *elasticsearch.TypedClient, indexName string, flags Sear
 	return r, nil
 }
 
+// query builder
 func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFlags) *search.Search {
-	sortMap := make(map[string]string)
-	if flags.Time {
+	sort := []types.SortCombinations{}
+	if len(flags.SortBy) > 0 {
 
-		sortMap["TIMESTAMP"] = "asc"
+		for _, datetimeField := range flags.SortBy {
+			sort = append(sort, types.SortOptions{
+				SortOptions: map[string]types.FieldSort{
+					datetimeField: {
+						Order: &sortorder.Desc,
+					},
+				},
+			})
+		}
+
 	}
-
-	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sortMap)
+	searchReq := es.Search().Index(indexName).Size(flags.Size).Sort(sort...)
 
 	if flags.Id != nil {
-		if q := BuildTermIdQuery(flags.Id); q != nil {
+		if q := BuildIdQuery(flags.Id); q != nil {
 			searchReq = searchReq.Query(q)
 		}
 	}
 
-	if flags.Terms && flags.LEVEL != nil {
-		if q := BuildTermLevelQuery("LEVEL", flags.LEVEL); q != nil {
-			searchReq = searchReq.Query(q)
-		}
-	}
+	if flags.Terms {
 
-	if flags.Terms && flags.APP_NAME != nil {
-		if q := BuildTermLevelQuery("APP_NAME", flags.APP_NAME); q != nil {
+		if q := BuildTermsQuery(flags.FieldsTermsMap[0].Name, flags.FieldsTermsMap[0].Value); q != nil {
 			searchReq = searchReq.Query(q)
 		}
 	}
@@ -146,18 +183,21 @@ func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 			results = append(results, hit.Fields)
 		}
 
+		if flags.Reverse {
+
+			results = Reverse(results)
+
+		}
+
 		if len(results) == 0 {
 			return fmt.Errorf("no results to process")
 		}
 
 		if !flags.Tabular {
-			b, err := json.MarshalIndent(results, "", " ")
-			if err != nil {
+			if err := json.NewEncoder(w).Encode(results); err != nil {
 				return serde.SerializingError(err)
 			}
 
-			fmt.Fprintf(w, "%s", b)
-			return nil
 		}
 
 		if err := processTab(results, w); err != nil {
@@ -167,12 +207,9 @@ func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 		return nil
 	}
 
-	b, err := json.MarshalIndent(r, "", " ")
-	if err != nil {
+	if err := json.NewEncoder(w).Encode(r); err != nil {
 		return serde.SerializingError(err)
 	}
-
-	fmt.Fprintf(w, "%s", b)
 
 	return nil
 
@@ -230,5 +267,18 @@ func KeysSorted(m map[string][]string) []string {
 	slices.Sort(keys)
 
 	return keys
+
+}
+
+func Watcher(w io.Writer) {
+
+	ticker := time.Tick(15 * time.Second)
+
+	for {
+		select {
+		case <-ticker:
+
+		}
+	}
 
 }

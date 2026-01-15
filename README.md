@@ -52,7 +52,7 @@ Below you can find some commands. For displaying the commands we will assume tha
   To create an index we use the flag --directory (-d) with the path of the directory
 
   ```bash
-  es index create --directory /elasticsearch/indices/some-index
+  es index create <new-index> --directory /elasticsearch/indices/some-index
   ```
 
 - Delete an index
