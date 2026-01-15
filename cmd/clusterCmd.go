@@ -15,6 +15,7 @@ type ClusterCmd = *cobra.Command
 
 type PingSubCmd = *cobra.Command
 type InfoSubCmd = *cobra.Command
+type NodesSubCmd = *cobra.Command
 
 func clusterCmdFunc(es *elasticsearch.TypedClient) ClusterCmd {
 	cmd := &cobra.Command{
@@ -32,10 +33,13 @@ func ClusterCmdFunc(es *elasticsearch.TypedClient) ClusterCmd {
 	clusterCmd := clusterCmdFunc(es)
 
 	pingSubCmd := pingClusterCmdFunc(es)
-	infoSubCmd := infoClusterCmdFunc(es)
+	infoSubCmd := addInfoClusterFlags(infoClusterCmdFunc(es))
+
+	nodesSubCmd := nodesClusterCmdFunc(es)
 
 	clusterCmd.AddCommand(pingSubCmd)
 	clusterCmd.AddCommand(infoSubCmd)
+	clusterCmd.AddCommand(nodesSubCmd)
 
 	return clusterCmd
 }
@@ -53,12 +57,12 @@ func pingClusterCmdFunc(es *elasticsearch.TypedClient) PingSubCmd {
 
 }
 
-func infoClusterCmdFunc(es *elasticsearch.TypedClient) InfoSubCmd {
+func nodesClusterCmdFunc(es *elasticsearch.TypedClient) NodesSubCmd {
 	cmd := &cobra.Command{
-		Use:   "info",
-		Short: "info",
-		Long:  "info info",
-		RunE:  runInfoClusterSubcmd(es),
+		Use:   "nodes",
+		Short: "nodes",
+		Long:  `nodes nodes`,
+		RunE:  runNodesSubCmd(es),
 		Args:  cobra.NoArgs,
 	}
 
@@ -92,22 +96,20 @@ func runCusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 
 }
 
-func runInfoClusterSubcmd(es *elasticsearch.TypedClient) RunEFunc {
+func runNodesSubCmd(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
-		r, err := es.Cluster.Info("_all").Do(ctx)
-
+		infoResponse, err := es.Nodes.Info().Do(ctx)
 		if err != nil {
-			return fmt.Errorf("at getting cluster info %w", err)
+			return fmt.Errorf("at getting nodes info %w", err)
 		}
 
-		b, err := json.MarshalIndent(r, "", " ")
+		b, err := json.Marshal(infoResponse)
 		if err != nil {
 			return serde.SerializingError(err)
 		}
-
 		fmt.Fprintf(cmd.OutOrStdout(), "%s", b)
 
 		return nil

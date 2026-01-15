@@ -68,11 +68,8 @@ func IndexCmdFunc(es *elasticsearch.TypedClient) IndexCmd {
 
 func runIndicesCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		if len(args) == 0 {
-			return fmt.Errorf("please provide at least one index name")
-		}
 
-		index := ParseArgsIntoSingleString(args)
+		index := ParseArgsIntoString(cmd, args)
 
 		mappings, _ := cmd.Flags().GetBool("mappings")
 		settings, _ := cmd.Flags().GetBool("settings")
