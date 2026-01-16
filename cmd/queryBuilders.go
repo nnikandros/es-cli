@@ -51,30 +51,6 @@ func BuildTermsQuery(field string, values []string) *types.Query {
 	}
 }
 
-package cmd
-
-import (
-	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
-)
-
-// For searching based on elasticsearch id use this one, since we have the build in IdsQuery
-func BuildTermIdQuery(ids []string) *types.Query {
-
-	switch len(ids) {
-	case 0:
-		return nil
-	default:
-
-		r := types.NewIdsQuery()
-		r.Values = ids
-
-		q := &types.Query{Ids: r}
-		return q
-
-	}
-
-}
-
 // build a simple term/terms query for a field. PAss a field, and the value(s)
 func BuildTermLevelQuery(field string, values []string) *types.Query {
 
@@ -103,8 +79,6 @@ func BuildTermLevelQuery(field string, values []string) *types.Query {
 		return query
 	}
 }
-
-
 
 func BuildFilterQuery(field string, values []string) *types.Query {
 	q := &types.Query{}
