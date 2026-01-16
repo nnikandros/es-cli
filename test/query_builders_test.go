@@ -31,3 +31,12 @@ func TestFilterQueryBuilders(t *testing.T) {
 	fmt.Printf("%s", b)
 
 }
+
+func TestParsingFlags(t *testing.T) {
+	args := []string{"search", "castor-test-log-v4", "--filter", "--LEVEL=INFO,DFGDFGD", "--APP_NAME=CASTOR"}
+	cmd.RootCmd.SetArgs(args)
+	err := cmd.RootCmd.Execute()
+	if err != nil {
+		t.Error(err)
+	}
+}

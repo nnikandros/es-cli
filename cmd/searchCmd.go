@@ -156,11 +156,20 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 		}
 	}
 
+	var queries []types.Query
+
 	if flags.Filter {
 
-		if q := BuildTermsQuery(flags.FieldsTermsMap[0].Name, flags.FieldsTermsMap[0].Value); q != nil {
-			searchReq = searchReq.Query(q)
+		for _, i := range flags.FieldsTermsMap {
+			if q := BuildTermsQuery(i.Name, i.Value); q != nil {
+				queries = append(queries, *q)
+			}
+
 		}
+
+		q := BuildFilterAndQuery(queries)
+		searchReq = searchReq.Query(q)
+
 	}
 
 	if len(flags.Fields) > 0 {

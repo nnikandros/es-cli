@@ -10,8 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// rootCmd represents the base command when called without any subcommands
-var rootCmd = &cobra.Command{
+// RootCmd represents the base command when called without any subcommands
+var RootCmd = &cobra.Command{
 	Use:   "es",
 	Short: "Elasticsearch Operations",
 	Long: `The es cli brings to you some of Elasticsearch operations in your terminal.
@@ -29,7 +29,7 @@ Certain operations for example pinging the cluster and listing all the indices r
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
-	err := rootCmd.Execute()
+	err := RootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
@@ -58,10 +58,10 @@ func init() {
 
 	clusterCmd := ClusterCmdFunc(typedClient)
 
-	rootCmd.AddCommand(indicesCmd)
-	rootCmd.AddCommand(searchCmd)
-	rootCmd.AddCommand(clusterCmd)
-	rootCmd.AddCommand(countcmd)
+	RootCmd.AddCommand(indicesCmd)
+	RootCmd.AddCommand(searchCmd)
+	RootCmd.AddCommand(clusterCmd)
+	RootCmd.AddCommand(countcmd)
 
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
