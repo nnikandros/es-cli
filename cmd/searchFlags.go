@@ -11,7 +11,7 @@ type SearchFlags struct {
 	Time           bool
 	SortBy         []string
 	Reverse        bool
-	Terms          bool
+	Filter         bool
 	Id             []string
 	FieldsTermsMap []EsFieldsConfig
 	Should         bool
@@ -31,7 +31,7 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 	reverse, _ := cmd.Flags().GetBool("reverse")
 	tabular, _ := cmd.Flags().GetBool("tab")
 
-	terms, _ := cmd.Flags().GetBool("terms")
+	filter, _ := cmd.Flags().GetBool("filter")
 	id, _ := cmd.Flags().GetStringSlice("id")
 
 	o := make([]EsFieldsConfig, 0, len(e.Fields))
@@ -48,6 +48,6 @@ func ParsedFlagsFromCmd(cmd *cobra.Command) (SearchFlags, error) {
 	// 	return SearchFlags{}, fmt.Errorf("you have provided revese but not time")
 	// }
 
-	return SearchFlags{Size: resizeSize, Fields: fields, Reverse: reverse, Tabular: tabular, Terms: terms, Id: id, FieldsTermsMap: o, SortBy: sortBy}, nil
+	return SearchFlags{Size: resizeSize, Fields: fields, Reverse: reverse, Tabular: tabular, Filter: filter, Id: id, FieldsTermsMap: o, SortBy: sortBy}, nil
 
 }

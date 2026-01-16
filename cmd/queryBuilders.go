@@ -81,8 +81,8 @@ func BuildTermLevelQuery(field string, values []string) *types.Query {
 }
 
 func BuildFilterQuery(field string, values []string) *types.Query {
-	q := &types.Query{}
-	b := &types.BoolQuery{}
+	q := types.NewQuery()
+	b := types.NewBoolQuery()
 
 	m := make(map[string]types.TermsQueryField)
 	m[field] = values
@@ -101,8 +101,10 @@ func BuildFilterQuery(field string, values []string) *types.Query {
 
 // add multiple term queries to  create a filter
 func BuildFilterAndQuery(queries []types.Query) *types.Query {
-	q := &types.Query{}
-	b := &types.BoolQuery{}
+	// q := &types.Query{}
+	q := types.NewQuery()
+	// b := &types.BoolQuery{}
+	b := types.NewBoolQuery()
 
 	b.Filter = queries
 
@@ -111,8 +113,8 @@ func BuildFilterAndQuery(queries []types.Query) *types.Query {
 }
 
 func MustQuery(q1 *types.Query, q2 *types.Query) *types.Query {
-	q := &types.Query{}
-	b := &types.BoolQuery{}
+	q := types.NewQuery()
+	b := types.NewBoolQuery()
 
 	m := []types.Query{*q1, *q2}
 	b.Must = m
