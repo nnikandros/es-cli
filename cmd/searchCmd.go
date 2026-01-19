@@ -72,7 +72,7 @@ func addSearchFlags(searchCmd SearchCmd) SearchCmd {
 
 	searchCmd.Flags().Bool("tab", false, "display the output of --fields in a table format")
 
-	searchCmd.Flags().Bool("terms", false, "do a term/terms search.")
+	searchCmd.Flags().Bool("filter", false, "make a filter query")
 
 	searchCmd.Flags().StringSlice("id", []string{}, "do a search based on elasticsearch internal _id. If you provide one id it will be a term search. If you provide more than one, it will be a terms search")
 
@@ -156,11 +156,20 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 		}
 	}
 
-	if flags.Terms {
+	var queries []types.Query
 
-		if q := BuildTermsQuery(flags.FieldsTermsMap[0].Name, flags.FieldsTermsMap[0].Value); q != nil {
-			searchReq = searchReq.Query(q)
+	if flags.Filter {
+
+		for _, i := range flags.FieldsTermsMap {
+			if q := BuildTermsQuery(i.Name, i.Value); q != nil {
+				queries = append(queries, *q)
+			}
+
 		}
+
+		q := BuildFilterAndQuery(queries)
+		searchReq = searchReq.Query(q)
+
 	}
 
 	if len(flags.Fields) > 0 {
@@ -267,18 +276,5 @@ func KeysSorted(m map[string][]string) []string {
 	slices.Sort(keys)
 
 	return keys
-
-}
-
-func Watcher(w io.Writer) {
-
-	ticker := time.Tick(15 * time.Second)
-
-	for {
-		select {
-		case <-ticker:
-
-		}
-	}
 
 }

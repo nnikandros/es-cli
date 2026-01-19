@@ -17,9 +17,3 @@ fields:
   - name: PUBLICATION_DATE
     usage: "dummy publication date"
     date: true
-
-  - name: CONTENT
-    usage: "content field, its a text field"
-
-  - name: ID
-    usage: "internal id "
