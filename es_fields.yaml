@@ -17,3 +17,9 @@ fields:
   - name: PUBLICATION_DATE
     usage: "dummy publication date"
     date: true
+
+  - name: CONTENT
+    usage: "dgdgd dgdf"
+
+  - name: ID
+    usage: "fgfgf gfg"

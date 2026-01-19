@@ -278,16 +278,3 @@ func KeysSorted(m map[string][]string) []string {
 	return keys
 
 }
-
-func Watcher(w io.Writer) {
-
-	ticker := time.Tick(15 * time.Second)
-
-	for {
-		select {
-		case <-ticker:
-
-		}
-	}
-
-}
