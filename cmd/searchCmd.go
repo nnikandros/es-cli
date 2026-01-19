@@ -185,17 +185,20 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 }
 
 func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
+
+	if flags.Reverse {
+
+		reversedHits := Reverse(r.Hits.Hits)
+
+		r.Hits.Hits = reversedHits
+
+	}
+
 	if len(flags.Fields) > 0 {
 		results := make([]map[string]json.RawMessage, 0, flags.Size)
 
 		for _, hit := range r.Hits.Hits {
 			results = append(results, hit.Fields)
-		}
-
-		if flags.Reverse {
-
-			results = Reverse(results)
-
 		}
 
 		if len(results) == 0 {
@@ -206,6 +209,8 @@ func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 			if err := json.NewEncoder(w).Encode(results); err != nil {
 				return serde.SerializingError(err)
 			}
+
+			return nil
 
 		}
 
