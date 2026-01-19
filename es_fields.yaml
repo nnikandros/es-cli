@@ -19,7 +19,7 @@ fields:
     date: true
 
   - name: CONTENT
-    usage: "dgdgd dgdf"
+    usage: "content field, its a text field"
 
   - name: ID
-    usage: "fgfgf gfg"
+    usage: "internal id "
