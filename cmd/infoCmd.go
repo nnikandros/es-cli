@@ -11,6 +11,7 @@ type ClusterCmd = *cobra.Command
 type PingSubCmd = *cobra.Command
 type InfoSubCmd = *cobra.Command
 type NodesSubCmd = *cobra.Command
+type IndexSubCmd = *cobra.Command
 
 // func clusterCmdFunc(es *elasticsearch.TypedClient) ClusterCmd {
 // 	cmd := &cobra.Command{
