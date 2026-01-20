@@ -23,7 +23,10 @@ func infoIndexCmdFunc(es *elasticsearch.TypedClient) IndexSubCmd {
 	return cmd
 }
 
-func addInfoIndexFlags() {
+func addInfoIndexFlags(indexInfoSub IndexSubCmd) IndexSubCmd {
+	indexInfoSub.Flags().BoolP("all", "a", false, "all indices or not")
+
+	return indexInfoSub
 
 }
 

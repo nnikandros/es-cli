@@ -48,6 +48,7 @@ func InfoCmdFunc(es *elasticsearch.TypedClient) InfoCmd {
 	infoCmd := infoCmdFunc(es)
 	clusterSubCmd := addInfoClusterFlags(infoclusterCmdFunc(es))
 	nodesSubCmd := addInfoNodesFlags(infoNodesCmdFunc(es))
+	indexSubCmd := addInfoIndexFlags(infoIndexCmdFunc(es))
 
 	// pingSubCmd := pingClusterCmdFunc(es)
 	// infoSubCmd := addInfoClusterFlags(infoClusterCmdFunc(es))
@@ -59,6 +60,7 @@ func InfoCmdFunc(es *elasticsearch.TypedClient) InfoCmd {
 	// clusterCmd.AddCommand(nodesSubCmd)
 	infoCmd.AddCommand(clusterSubCmd)
 	infoCmd.AddCommand(nodesSubCmd)
+	infoCmd.AddCommand(indexSubCmd)
 
 	return infoCmd
 }
