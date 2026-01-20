@@ -29,6 +29,7 @@ func addInfoClusterFlags(infoSub InfoSubCmd) ClusterCmd {
 	infoSub.Flags().Bool("settings", false, "Get cluster-wide settings. By default, it returns only settings that have been explicitly defined.")
 	infoSub.Flags().Bool("info", false, "Get cluster info. Returns basic information about the cluster")
 	infoSub.Flags().Bool("stats", false, "Get cluster statistics. Get basic index metrics (shard numbers, store size, memory usage) and information about the current nodes that form the cluster (number, roles, os, jvm versions, memory usage, cpu and installed plugins")
+	infoSub.Flags().Bool("ping", false, "pings cluster")
 
 	// infoSub.RegisterFlagCompletionFunc("target", func(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	// 	levels := []string{"_all", "http", "ingest", "thread_pool", "script"}
@@ -46,6 +47,7 @@ func runInfoClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		settings, _ := cmd.Flags().GetBool("settings")
 		info, _ := cmd.Flags().GetBool("info")
 		stats, _ := cmd.Flags().GetBool("stats")
+		ping, _ := cmd.Flags().GetBool("ping")
 		if info {
 			r, err := es.Cluster.Info("_all").Do(ctx)
 			if err != nil {
@@ -86,7 +88,24 @@ func runInfoClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return nil
 		}
 
+		if ping {
+
+			h, err := es.Ping().Do(ctx)
+			if err != nil {
+				return fmt.Errorf("pinging the cluster %w", err)
+			}
+
+			if h {
+				fmt.Println(h)
+			} else {
+				return fmt.Errorf("ping returned false. Check connection to the cluster, credentials, hosts etc")
+			}
+
+			return nil
+		}
+
 		return nil
+
 	}
 
 }

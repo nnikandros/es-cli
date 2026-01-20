@@ -91,25 +91,6 @@ func InfoCmdFunc(es *elasticsearch.TypedClient) InfoCmd {
 
 // }
 
-// func runPingClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
-// 	return func(cmd *cobra.Command, args []string) error {
-// 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-// 		defer cancel()
-// 		h, err := es.Ping().Do(ctx)
-// 		if err != nil {
-// 			return fmt.Errorf("pinging the cluster %w", err)
-// 		}
-
-// 		if h {
-// 			fmt.Println(h)
-// 		} else {
-// 			return fmt.Errorf("ping returned false. Check connection to the cluster, credentials, hosts etc")
-// 		}
-
-// 		return nil
-// 	}
-// }
-
 // func runClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 // 	return func(cmd *cobra.Command, args []string) error {
 // 		return nil
