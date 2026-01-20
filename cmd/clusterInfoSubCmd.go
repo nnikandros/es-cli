@@ -61,7 +61,7 @@ func runInfoClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		}
 
 		if settings {
-			s, err := es.Cluster.GetSettings().Do(ctx)
+			s, err := es.Cluster.GetSettings().IncludeDefaults(true).Do(ctx)
 			if err != nil {
 				return fmt.Errorf("at getting cluster settings %w", err)
 			}

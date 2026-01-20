@@ -46,7 +46,7 @@ func runInfoCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 func InfoCmdFunc(es *elasticsearch.TypedClient) InfoCmd {
 	infoCmd := infoCmdFunc(es)
 	clusterSubCmd := addInfoClusterFlags(infoclusterCmdFunc(es))
-	nodesSubCmd := infoNodesCmdFunc(es)
+	nodesSubCmd := addInfoNodesFlags(infoNodesCmdFunc(es))
 
 	// pingSubCmd := pingClusterCmdFunc(es)
 	// infoSubCmd := addInfoClusterFlags(infoClusterCmdFunc(es))
