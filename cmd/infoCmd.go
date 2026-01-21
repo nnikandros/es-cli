@@ -50,50 +50,9 @@ func InfoCmdFunc(es *elasticsearch.TypedClient) InfoCmd {
 	nodesSubCmd := addInfoNodesFlags(infoNodesCmdFunc(es))
 	indexSubCmd := addInfoIndexFlags(infoIndexCmdFunc(es))
 
-	// pingSubCmd := pingClusterCmdFunc(es)
-	// infoSubCmd := addInfoClusterFlags(infoClusterCmdFunc(es))
-
-	// nodesSubCmd := nodesClusterCmdFunc(es)
-
-	// clusterCmd.AddCommand(pingSubCmd)
-	// clusterCmd.AddCommand(infoSubCmd)
-	// clusterCmd.AddCommand(nodesSubCmd)
 	infoCmd.AddCommand(clusterSubCmd)
 	infoCmd.AddCommand(nodesSubCmd)
 	infoCmd.AddCommand(indexSubCmd)
 
 	return infoCmd
 }
-
-// func pingClusterCmdFunc(es *elasticsearch.TypedClient) PingSubCmd {
-// 	cmd := &cobra.Command{
-// 		Use:   "ping",
-// 		Short: "pings",
-// 		Long:  `ping ping`,
-// 		RunE:  runPingClusterCmdFunc(es),
-// 		Args:  cobra.NoArgs,
-// 	}
-
-// 	return cmd
-
-// }
-
-// func nodesClusterCmdFunc(es *elasticsearch.TypedClient) NodesSubCmd {
-// 	cmd := &cobra.Command{
-// 		Use:   "nodes",
-// 		Short: "nodes",
-// 		Long:  `nodes nodes`,
-// 		RunE:  runNodesSubCmd(es),
-// 		Args:  cobra.NoArgs,
-// 	}
-
-// 	return cmd
-
-// }
-
-// func runClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
-// 	return func(cmd *cobra.Command, args []string) error {
-// 		return nil
-// 	}
-
-// }
