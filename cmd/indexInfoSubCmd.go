@@ -2,8 +2,10 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
+	"serde"
 	"text/tabwriter"
 	"time"
 
@@ -24,7 +26,7 @@ func infoIndexCmdFunc(es *elasticsearch.TypedClient) IndexSubCmd {
 }
 
 func addInfoIndexFlags(indexInfoSub IndexSubCmd) IndexSubCmd {
-	indexInfoSub.Flags().BoolP("all", "a", false, "all indices or not")
+	indexInfoSub.Flags().BoolP("all", "a", false, "display all info for all indices, including monitor")
 
 	return indexInfoSub
 
@@ -32,13 +34,36 @@ func addInfoIndexFlags(indexInfoSub IndexSubCmd) IndexSubCmd {
 
 func runIndexInfoCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		return nil
+		t, _ := cmd.Flags().GetBool("all")
+
+		switch {
+		default:
+			if err := listIndicesTabular(es, cmd.OutOrStderr()); err != nil {
+				return fmt.Errorf("at listing indices in a table format %w", err)
+			}
+
+			return nil
+
+		case t:
+			ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancelFunc()
+			r, err := es.Cat.Indices().Do(ctx)
+			if err != nil {
+				return fmt.Errorf("at doing request to get the indices %w", err)
+			}
+
+			if err := json.NewEncoder(cmd.OutOrStdout()).Encode(r); err != nil {
+				return serde.SerializingError(err)
+			}
+
+			return nil
+
+		}
 
 	}
 
 }
 
-// not finished
 func listIndicesTabular(es *elasticsearch.TypedClient, w io.Writer) error {
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
 
@@ -50,10 +75,10 @@ func listIndicesTabular(es *elasticsearch.TypedClient, w io.Writer) error {
 	}
 
 	tbW := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
-	fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", "index", "health", "docs.count", "docs.deleted", "dataset.size", "status")
+	fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", "index", "health", "docs.count", "docs.deleted", "dataset.size", "status", "primary_shards", "primary_size")
 	for _, indexRecord := range r {
 		if IsIndexNameValid(*indexRecord.Index) {
-			fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", *indexRecord.Index, *indexRecord.Health, *indexRecord.DocsCount, *indexRecord.DocsDeleted, *indexRecord.DatasetSize, *indexRecord.Status)
+			fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", *indexRecord.Index, *indexRecord.Health, *indexRecord.DocsCount, *indexRecord.DocsDeleted, *indexRecord.DatasetSize, *indexRecord.Status, *indexRecord.Pri, *indexRecord.PriStoreSize)
 
 		}
 	}

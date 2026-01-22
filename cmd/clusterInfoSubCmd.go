@@ -27,7 +27,6 @@ func addInfoClusterFlags(infoSub InfoSubCmd) ClusterCmd {
 
 	// infoSub.Flags().StringP("target", "t", "_all", "target for cluster information")
 	infoSub.Flags().Bool("settings", false, "Get cluster-wide settings. By default, it returns only settings that have been explicitly defined.")
-	infoSub.Flags().Bool("info", false, "Get cluster info. Returns basic information about the cluster")
 	infoSub.Flags().Bool("stats", false, "Get cluster statistics. Get basic index metrics (shard numbers, store size, memory usage) and information about the current nodes that form the cluster (number, roles, os, jvm versions, memory usage, cpu and installed plugins")
 	infoSub.Flags().Bool("ping", false, "pings cluster")
 
@@ -45,10 +44,48 @@ func runInfoClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		defer cancel()
 
 		settings, _ := cmd.Flags().GetBool("settings")
-		info, _ := cmd.Flags().GetBool("info")
 		stats, _ := cmd.Flags().GetBool("stats")
 		ping, _ := cmd.Flags().GetBool("ping")
-		if info {
+
+		switch {
+		case settings:
+			s, err := es.Cluster.GetSettings().IncludeDefaults(true).Do(ctx)
+			if err != nil {
+				return fmt.Errorf("at getting cluster settings %w", err)
+			}
+
+			if err = json.NewEncoder(cmd.OutOrStdout()).Encode(s); err != nil {
+				return serde.SerializingError(err)
+			}
+
+			return nil
+
+		case stats:
+			s, err := es.Cluster.Stats().Do(ctx)
+			if err != nil {
+				return fmt.Errorf("at getting cluster stats %w", err)
+			}
+
+			if err = json.NewEncoder(cmd.OutOrStdout()).Encode(s); err != nil {
+				return serde.SerializingError(err)
+			}
+
+			return nil
+		case ping:
+			h, err := es.Ping().Do(ctx)
+			if err != nil {
+				return fmt.Errorf("pinging the cluster %w", err)
+			}
+
+			if h {
+				fmt.Fprintln(cmd.OutOrStdout(), h)
+			} else {
+				return fmt.Errorf("ping returned false. Check connection to the cluster, credentials, hosts etc")
+			}
+
+			return nil
+
+		default:
 			r, err := es.Cluster.Info("_all").Do(ctx)
 			if err != nil {
 				return fmt.Errorf("at getting cluster info %w", err)
@@ -61,50 +98,6 @@ func runInfoClusterCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return nil
 
 		}
-
-		if settings {
-			s, err := es.Cluster.GetSettings().IncludeDefaults(true).Do(ctx)
-			if err != nil {
-				return fmt.Errorf("at getting cluster settings %w", err)
-			}
-
-			if err = json.NewEncoder(cmd.OutOrStdout()).Encode(s); err != nil {
-				return serde.SerializingError(err)
-			}
-
-			return nil
-		}
-
-		if stats {
-			s, err := es.Cluster.Stats().Do(ctx)
-			if err != nil {
-				return fmt.Errorf("at getting cluster stats %w", err)
-			}
-
-			if err = json.NewEncoder(cmd.OutOrStdout()).Encode(s); err != nil {
-				return serde.SerializingError(err)
-			}
-
-			return nil
-		}
-
-		if ping {
-
-			h, err := es.Ping().Do(ctx)
-			if err != nil {
-				return fmt.Errorf("pinging the cluster %w", err)
-			}
-
-			if h {
-				fmt.Println(h)
-			} else {
-				return fmt.Errorf("ping returned false. Check connection to the cluster, credentials, hosts etc")
-			}
-
-			return nil
-		}
-
-		return nil
 
 	}
 
