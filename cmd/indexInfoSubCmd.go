@@ -75,10 +75,10 @@ func listIndicesTabular(es *elasticsearch.TypedClient, w io.Writer) error {
 	}
 
 	tbW := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
-	fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", "index", "health", "docs.count", "docs.deleted", "dataset.size", "status", "primary_shards", "primary_size")
+	fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", "index", "health", "docs.count", "docs.deleted", "dataset.size", "status", "primary_shards", "primary_size")
 	for _, indexRecord := range r {
 		if IsIndexNameValid(*indexRecord.Index) {
-			fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", *indexRecord.Index, *indexRecord.Health, *indexRecord.DocsCount, *indexRecord.DocsDeleted, *indexRecord.DatasetSize, *indexRecord.Status, *indexRecord.Pri, *indexRecord.PriStoreSize)
+			fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n", *indexRecord.Index, *indexRecord.Health, *indexRecord.DocsCount, *indexRecord.DocsDeleted, *indexRecord.DatasetSize, *indexRecord.Status, *indexRecord.Pri, *indexRecord.PriStoreSize)
 
 		}
 	}
@@ -87,27 +87,27 @@ func listIndicesTabular(es *elasticsearch.TypedClient, w io.Writer) error {
 
 	return nil
 
-}
+	// }
 
-// this wil print all indices including the ones from elasticsearch
-func listIndicesTabularaAll(es *elasticsearch.TypedClient, w io.Writer) error {
-	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+	// // this wil print all indices including the ones from elasticsearch
+	// func listIndicesTabularaAll(es *elasticsearch.TypedClient, w io.Writer) error {
+	// 	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
 
-	defer cancelFunc()
+	// 	defer cancelFunc()
 
-	r, err := es.Cat.Indices().Do(ctx)
-	if err != nil {
-		return fmt.Errorf("at doing request to get the indices %w", err)
-	}
+	// 	r, err := es.Cat.Indices().Do(ctx)
+	// 	if err != nil {
+	// 		return fmt.Errorf("at doing request to get the indices %w", err)
+	// 	}
 
-	tbW := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
-	fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", "index", "health", "docs.count", "docs.deleted", "dataset.size", "status")
-	for _, indexRecord := range r {
-		fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", *indexRecord.Index, *indexRecord.Health, *indexRecord.DocsCount, *indexRecord.DocsDeleted, *indexRecord.DatasetSize, *indexRecord.Status)
-	}
+	// 	tbW := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
+	// 	fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", "index", "health", "docs.count", "docs.deleted", "dataset.size", "status")
+	// 	for _, indexRecord := range r {
+	// 		fmt.Fprintf(tbW, "%s\t%s\t%s\t%s\t%s\t%s\n", *indexRecord.Index, *indexRecord.Health, *indexRecord.DocsCount, *indexRecord.DocsDeleted, *indexRecord.DatasetSize, *indexRecord.Status)
+	// 	}
 
-	tbW.Flush()
+	// 	tbW.Flush()
 
-	return nil
+	// 	return nil
 
 }
