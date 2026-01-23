@@ -56,7 +56,7 @@ func init() {
 	searchCmd := addSearchFlags(searchCmdFunc(typedClient))
 	countcmd := addCountFlags(countCmdFunc(typedClient))
 
-	clusterCmd := ClusterCmdFunc(typedClient)
+	clusterCmd := InfoCmdFunc(typedClient)
 
 	RootCmd.AddCommand(indicesCmd)
 	RootCmd.AddCommand(searchCmd)
