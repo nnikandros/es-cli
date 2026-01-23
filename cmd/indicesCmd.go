@@ -55,12 +55,12 @@ func IndexCmdFunc(es *elasticsearch.TypedClient) IndexCmd {
 	listSubcommand := addListFlags(listIndicesCmdFunc(es))
 	createSubCommand := addCreateFlags(createIndexCmdFunc(es))
 	deleteSubCommand := deleteIndexCmdFunc(es)
-	cloneSubCommand := addCloneFlags(cloneIndexCmdFunc(es))
+	// cloneSubCommand := addCloneFlags(cloneMigrateCmdFunc(es))
 
 	indicesCmd.AddCommand(listSubcommand)
 	indicesCmd.AddCommand(createSubCommand)
 	indicesCmd.AddCommand(deleteSubCommand)
-	indicesCmd.AddCommand(cloneSubCommand)
+	// indicesCmd.AddCommand(cloneSubCommand)
 
 	return indicesCmd
 

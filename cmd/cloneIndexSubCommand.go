@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func cloneIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
+func cloneMigrateCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               "clone",
 		Short:             "clone subcommand clones an index(ices) that you provide as args",
