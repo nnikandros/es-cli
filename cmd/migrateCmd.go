@@ -18,11 +18,14 @@ func migrateCmdFunc(es *elasticsearch.TypedClient) SearchCmd {
 	return cmd
 }
 
-func migrateFunc(es *elasticsearch.TypedClient) {
+func migrateFunc(es *elasticsearch.TypedClient) MigrateCmd {
 
 	migrateCmd := migrateCmdFunc(es)
 
 	cloneSubCommand := addCloneFlags(cloneMigrateCmdFunc(es))
-
+	reindexSubComand := addReindexFlags(reindexMigrateCmdFunc(es))
 	migrateCmd.AddCommand(cloneSubCommand)
+	migrateCmd.AddCommand(reindexSubComand)
+
+	return migrateCmd
 }

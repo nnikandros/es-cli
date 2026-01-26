@@ -58,10 +58,13 @@ func init() {
 
 	clusterCmd := InfoCmdFunc(typedClient)
 
+	migrateCmd := migrateFunc(typedClient)
+
 	RootCmd.AddCommand(indicesCmd)
 	RootCmd.AddCommand(searchCmd)
 	RootCmd.AddCommand(clusterCmd)
 	RootCmd.AddCommand(countcmd)
+	RootCmd.AddCommand(migrateCmd)
 
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
