@@ -30,7 +30,7 @@ es migrate reindex --source=<index-1>,<index-2> -t <target-index>`,
 func addReindexFlags(countCmd *cobra.Command) *cobra.Command {
 	countCmd.Flags().StringP("target", "t", "", "Name of clone index that will be created.")
 	countCmd.Flags().StringSliceP("source", "s", []string{}, "Name of clone index that will be created.")
-	// countCmd.Flags().Int("size", 0, "number of docs to reindex")
+	countCmd.Flags().Int64("size", 0, "number of docs to reindex")
 	return countCmd
 
 }
@@ -43,16 +43,16 @@ func runReIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		sourcIndices, _ := cmd.Flags().GetStringSlice("source")
 		targetIndex, _ := cmd.Flags().GetString("target")
 
-		// size, _ := cmd.Flags().GetInt64("size")
+		size, _ := cmd.Flags().GetInt64("size")
 
 		source := &types.ReindexSource{Index: sourcIndices}
 
 		dest := &types.ReindexDestination{Index: targetIndex}
 
 		reindexRequuest := es.Core.Reindex().Source(source).Dest(dest)
-		// if size != 0 {
-		// 	reindexRequuest = reindexRequuest.MaxDocs(size)
-		// }
+		if size != 0 {
+			reindexRequuest = reindexRequuest.MaxDocs(size)
+		}
 
 		resp, err := reindexRequuest.Do(ctx)
 		if err != nil {
