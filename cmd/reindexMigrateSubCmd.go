@@ -12,13 +12,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+type ReindexCmd = *cobra.Command
+
 func reindexMigrateCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "reindex",
 		Short: "reindex API",
 		Long:  "To be updated",
 		RunE:  runReIndexCmdFunc(es),
-		// ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
 		Example: `es migrate reindex -s <clone-index-1> -s <source-index-2>  -t <target-index>
 es migrate reindex --source=<index-1>,<index-2> -t <target-index>`,
 	}
@@ -27,11 +28,14 @@ es migrate reindex --source=<index-1>,<index-2> -t <target-index>`,
 
 }
 
-func addReindexFlags(countCmd *cobra.Command) *cobra.Command {
-	countCmd.Flags().StringP("target", "t", "", "Name of clone index that will be created.")
-	countCmd.Flags().StringSliceP("source", "s", []string{}, "Name of clone index that will be created.")
-	countCmd.Flags().Int64("size", 0, "number of docs to reindex")
-	return countCmd
+func addReindexFlags(reindexCmd *cobra.Command, es *elasticsearch.TypedClient) *cobra.Command {
+	reindexCmd.Flags().StringP("target", "t", "", "Name of clone index that will be created.")
+	reindexCmd.Flags().StringSliceP("source", "s", []string{}, "Name of clone index that will be created.")
+	reindexCmd.Flags().Int64("size", 0, "number of docs to reindex")
+
+	reindexCmd.RegisterFlagCompletionFunc("target", ValidArgsFuncAutoCompletion(es))
+	reindexCmd.RegisterFlagCompletionFunc("source", ValidArgsFuncAutoCompletion(es))
+	return reindexCmd
 
 }
 
@@ -42,7 +46,6 @@ func runReIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 
 		sourcIndices, _ := cmd.Flags().GetStringSlice("source")
 		targetIndex, _ := cmd.Flags().GetString("target")
-
 		size, _ := cmd.Flags().GetInt64("size")
 
 		source := &types.ReindexSource{Index: sourcIndices}
