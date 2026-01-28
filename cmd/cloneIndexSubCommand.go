@@ -2,30 +2,39 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"serde"
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/spf13/cobra"
 )
 
-func cloneIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
+type CloneCmd = *cobra.Command
+
+func cloneMigrateCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:               "clone",
-		Short:             "clone subcommand clones an index(ices) that you provide as args",
-		Long:              "To be updated",
-		RunE:              runCloneIndexCmdFunc(es),
-		ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
-		Example:           `es clone -t <clone-index> <index-to-be-cloned>`,
+		Use:     "clone",
+		Short:   "clone subcommand clones an index(ices) that you provide as args",
+		Long:    "To be updated",
+		RunE:    runCloneIndexCmdFunc(es),
+		Args:    cobra.NoArgs,
+		Example: `es clone -t <clone-index> -s <index-to-be-cloned>`,
 	}
 
 	return cmd
 
 }
 
-func addCloneFlags(countCmd *cobra.Command) *cobra.Command {
-	countCmd.Flags().StringP("target", "t", "", "Name of clone index that will be created.")
-	return countCmd
+func addCloneFlags(cloneCmd *cobra.Command, es *elasticsearch.TypedClient) *cobra.Command {
+	cloneCmd.Flags().StringP("target", "t", "", "Name of the clone")
+	cloneCmd.Flags().StringP("source", "s", "", "Name of the index that will be cloned.")
+
+	cloneCmd.RegisterFlagCompletionFunc("target", ValidArgsFuncAutoCompletion(es))
+	cloneCmd.RegisterFlagCompletionFunc("source", ValidArgsFuncAutoCompletion(es))
+
+	return cloneCmd
 
 }
 
@@ -43,9 +52,13 @@ func runCloneIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return fmt.Errorf("at closing %w", err)
 		}
 
-		_, err = es.Indices.Clone(sourceIndex, targetIndex).Do(ctx)
+		r2, err := es.Indices.Clone(sourceIndex, targetIndex).Do(ctx)
 		if err != nil {
 			return fmt.Errorf("at cloning the index: %v reason: %w", sourceIndex, err)
+		}
+
+		if err = json.NewEncoder(cmd.OutOrStdout()).Encode(r2); err != nil {
+			return serde.SerializingError(err)
 		}
 
 		r3, err := es.Indices.Open(sourceIndex).Do(ctx)
@@ -53,7 +66,7 @@ func runCloneIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return fmt.Errorf("at opening the index %v: %w", sourceIndex, err)
 		}
 
-		fmt.Println(r3)
+		fmt.Fprintln(cmd.OutOrStdout(), r3)
 		return nil
 	}
 

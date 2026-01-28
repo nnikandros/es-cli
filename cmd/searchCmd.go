@@ -186,18 +186,29 @@ func buildQuery(es *elasticsearch.TypedClient, indexName string, flags SearchFla
 
 func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 
-	if flags.Reverse {
+	hits := make([]types.Hit, 0, len(r.Hits.Hits))
 
-		reversedHits := Reverse(r.Hits.Hits)
-
-		r.Hits.Hits = reversedHits
+	switch flags.Reverse {
+	case true:
+		hits = Reverse(r.Hits.Hits)
+	default:
+		hits = r.Hits.Hits
 
 	}
+
+	// if flags.Reverse {
+
+	// 	reversedHits := Reverse(r.Hits.Hits)
+
+	// 	hits = reversedHits
+	// } else {
+	// 	hits = r.Hits.Hits
+	// }
 
 	if len(flags.Fields) > 0 {
 		results := make([]map[string]json.RawMessage, 0, flags.Size)
 
-		for _, hit := range r.Hits.Hits {
+		for _, hit := range hits {
 			results = append(results, hit.Fields)
 		}
 
