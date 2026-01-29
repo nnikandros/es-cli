@@ -20,8 +20,7 @@ fields:
   - name: APP_ID
     usage: "app id field"
 
-  - name: MODULE
-    usage: "module field"
+  
   
   - name: REQUEST_ID
     usage: "request id field"
