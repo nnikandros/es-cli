@@ -42,22 +42,6 @@ func TestReadEnvVars(t *testing.T) {
 		fmt.Printf("%+v", testCmd.Flag(f.Name))
 	}
 
-	// err := godotenv.Load("../.env")
-	// if err != nil {
-	// 	t.Error(err)
-	// }
-
-	// // for _, e := range os.Environ() {
-	// // 	// pair := strings.SplitN(e, "=", 2)
-	// // 	// fmt.Println(pair[0])
-	// // 	fmt.Println(e)
-	// // }
-
-	// s := filter(os.Environ(), func(x string) bool {
-	// 	return strings.Contains(x, "ES_FIELD")
-	// })
-
-	// fmt.Println(strings.Split(s[0], "="))
 }
 
 func filter[T any](s []T, predicate func(T) bool) []T {
