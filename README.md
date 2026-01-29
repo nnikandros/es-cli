@@ -15,15 +15,14 @@ The current subcommands are:
 
 1. index. Has further subcommands:
 
-
-    - create
-    - delete
-    - list
-    - clone
+   - create
+   - delete
+   - list
 
 2. count
-3. cluster
+3. info
 4. search
+5. migrate
 
 ### Usage of Subcommands and Examples of flags
 
