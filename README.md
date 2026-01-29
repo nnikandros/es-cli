@@ -15,14 +15,21 @@ The current subcommands are:
 
 1. index. Has further subcommands:
 
-   - create
-   - delete
-   - list
+   - create, create an index with specified mappings and settings
+   - delete, deletes an index
+   - list, list the names of all indices in the cluster
 
 2. count
-3. info
+3. info. Has further subcommands:
+
+   - cluster
+   - nodes
+   - index
+
 4. search
-5. migrate
+5. migrate. Has further subcommands
+   - clone
+   - reindex
 
 ### Usage of Subcommands and Examples of flags
 
