@@ -24,7 +24,8 @@ func createIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 argument the directory where you store the mappings.json and settings.json`,
 		RunE: runCreateIndexCmdFunc(es),
 		Example: `es index create <name-new-index> -d ./elasticops/settings_mappings/test-index
-es index create <name-new-index> --directory ./elasticops/settings_mappings/test-index		
+es index create <name-new-index> --directory ./elasticops/settings_mappings/test-index
+es index create --directory ./elasticops/settings_mappings/test-index			
 `,
 	}
 
@@ -41,13 +42,20 @@ func addCreateFlags(create *cobra.Command) *cobra.Command {
 func runCreateIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 
-		if len(args) != 1 {
-			return fmt.Errorf("the subcommand create takes exactly one argument")
+		directory, err := cmd.Flags().GetString("directory")
+
+		var indexName string
+
+		switch len(args) {
+		case 0:
+			indexName = filepath.Base(directory)
+		case 1:
+			indexName = args[0]
+		default:
+			return fmt.Errorf("too many arguments")
+
 		}
 
-		indexName := args[0]
-
-		directory, err := cmd.Flags().GetString("directory")
 		if err != nil {
 			return fmt.Errorf("at reading the value of the path flag %w", err)
 		}
