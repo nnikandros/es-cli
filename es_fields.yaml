@@ -14,7 +14,17 @@ fields:
     usage: "timestamp field"
     date: true
 
+  - name: MODULE
+    usage: "module filed"
   
+  - name: APP_ID
+    usage: "app id field"
+
+  - name: MODULE
+    usage: "module field"
+  
+  - name: REQUEST_ID
+    usage: "request id field"
 
   - name: CONTENT
     usage: "content field, its a text field"
