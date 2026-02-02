@@ -43,8 +43,8 @@ func runCloneIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 		defer cancel()
 
-		sourceIndex := args[0]
 		targetIndex, _ := cmd.Flags().GetString("target")
+		sourceIndex, _ := cmd.Flags().GetString("source")
 
 		_, err := es.Indices.Close(sourceIndex).Do(ctx)
 

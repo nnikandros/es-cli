@@ -20,6 +20,7 @@ func reindexMigrateCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 		Short: "reindex API",
 		Long:  "To be updated",
 		RunE:  runReIndexCmdFunc(es),
+		Args:  cobra.NoArgs,
 		Example: `es migrate reindex -s <clone-index-1> -s <source-index-2>  -t <target-index>
 es migrate reindex --source=<index-1>,<index-2> -t <target-index>`,
 	}
@@ -59,7 +60,7 @@ func runReIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 
 		resp, err := reindexRequuest.Do(ctx)
 		if err != nil {
-			return fmt.Errorf("reindx request %w", err)
+			return fmt.Errorf("reindex request %w", err)
 		}
 
 		if err = json.NewEncoder(cmd.OutOrStdout()).Encode(resp); err != nil {
