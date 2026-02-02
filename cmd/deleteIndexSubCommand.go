@@ -41,11 +41,9 @@ func runDeleteIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return fmt.Errorf("at deleting the index %w", err)
 		}
 
-		marshaled, err := json.Marshal(r)
-		if err != nil {
+		if err := json.NewEncoder(cmd.OutOrStdout()).Encode(r); err != nil {
 			return serde.SerializingError(err)
 		}
-		fmt.Printf("%s\n", marshaled)
 
 		return nil
 	}
