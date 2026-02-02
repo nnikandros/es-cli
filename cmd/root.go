@@ -54,7 +54,7 @@ func init() {
 	indicesCmd := IndexCmdFunc(typedClient)
 
 	searchCmd := addSearchFlags(searchCmdFunc(typedClient))
-	countcmd := addCountFlags(countCmdFunc(typedClient))
+	// countcmd := addCountFlags(countCmdFunc(typedClient))
 
 	clusterCmd := InfoCmdFunc(typedClient)
 
@@ -63,7 +63,7 @@ func init() {
 	RootCmd.AddCommand(indicesCmd)
 	RootCmd.AddCommand(searchCmd)
 	RootCmd.AddCommand(clusterCmd)
-	RootCmd.AddCommand(countcmd)
+	// RootCmd.AddCommand(countcmd)
 	RootCmd.AddCommand(migrateCmd)
 
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
