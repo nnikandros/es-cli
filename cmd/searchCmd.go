@@ -192,7 +192,7 @@ func processResponse(r *search.Response, flags SearchFlags, w io.Writer) error {
 	case true:
 		hits = Reverse(r.Hits.Hits)
 	default:
-		hits = r.Hits.Hits
+		hits = append(hits, r.Hits.Hits...)
 
 	}
 
