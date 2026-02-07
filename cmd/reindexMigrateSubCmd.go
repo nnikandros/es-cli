@@ -33,6 +33,7 @@ func addReindexFlags(reindexCmd *cobra.Command, es *elasticsearch.TypedClient) *
 	reindexCmd.Flags().StringP("target", "t", "", "Name of clone index that will be created.")
 	reindexCmd.Flags().StringSliceP("source", "s", []string{}, "Name of clone index that will be created.")
 	reindexCmd.Flags().Int64("size", 0, "number of docs to reindex")
+	reindexCmd.Flags().BoolP("wait", "w", false, "wait for completion. If false it will return a task id")
 
 	reindexCmd.RegisterFlagCompletionFunc("target", ValidArgsFuncAutoCompletion(es))
 	reindexCmd.RegisterFlagCompletionFunc("source", ValidArgsFuncAutoCompletion(es))
@@ -48,12 +49,13 @@ func runReIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		sourcIndices, _ := cmd.Flags().GetStringSlice("source")
 		targetIndex, _ := cmd.Flags().GetString("target")
 		size, _ := cmd.Flags().GetInt64("size")
+		wait, _ := cmd.Flags().GetBool("wait")
 
 		source := &types.ReindexSource{Index: sourcIndices}
 
 		dest := &types.ReindexDestination{Index: targetIndex}
 
-		reindexRequuest := es.Core.Reindex().Source(source).Dest(dest)
+		reindexRequuest := es.Core.Reindex().Source(source).Dest(dest).WaitForCompletion(wait)
 		if size != 0 {
 			reindexRequuest = reindexRequuest.MaxDocs(size)
 		}
