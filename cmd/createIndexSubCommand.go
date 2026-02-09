@@ -26,8 +26,8 @@ argument the directory where you store the mappings.json and settings.json`,
 		RunE: runCreateIndexCmdFunc(es),
 		Example: `es index create <name-new-index> -d ./elasticops/settings_mappings/test-index
 es index create <name-new-index> --directory ./elasticops/settings_mappings/test-index
-es index create --directory ./elasticops/settings_mappings/test-index			
-`,
+es index create --directory ./elasticops/settings_mappings/test-index`,
+		// PreRunE: func(cmd *cobra.Command, args []string) error {},
 	}
 
 	return cmd
@@ -44,9 +44,6 @@ func addCreateFlags(create *cobra.Command) *cobra.Command {
 func runCreateIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 
-		mappings := types.TypeMapping{}
-		settings := types.IndexSettings{}
-
 		directory, _ := cmd.Flags().GetString("directory")
 		pathToJson, _ := cmd.Flags().GetString("path")
 
@@ -62,36 +59,39 @@ func runCreateIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 
 		}
 
-		if len(directory) != 0 {
-			absPathDirToMappingsAndSettings, _ := filepath.Abs(directory)
+		isdir := len(directory)
 
-			_, err := os.Stat(absPathDirToMappingsAndSettings)
+		switch isdir {
+		case 0:
+			mAnds, err := handleFileCase(pathToJson)
 			if err != nil {
-				if errors.Is(err, fs.ErrNotExist) {
-					return fmt.Errorf("the path %v does not exist, %w", directory, err)
-				}
-				return fmt.Errorf("stat of the %v returned an  error %w", directory, err)
+				return fmt.Errorf("at handleFileCase %w", err)
 			}
 
-			pathToMappings := filepath.Join(absPathDirToMappingsAndSettings, "mappings.json")
-			pathToSettings := filepath.Join(absPathDirToMappingsAndSettings, "settings.json")
-
-			// to use serde.DecodeV2
-			mappings, err1 := serde.DecodeJsonFileToStruct[types.TypeMapping](pathToMappings)
-			settings, err2 := serde.DecodeJsonFileToStruct[types.IndexSettings](pathToSettings)
-
-			if err1 != nil || err2 != nil {
-				return fmt.Errorf("parsing the mappings or settings json files %w, %w", err1, err2)
+			r, err := createIndex(es, indexName, mAnds.Mappings, mAnds.Settings)
+			if err != nil {
+				return fmt.Errorf("at creating index: %w", err)
 			}
 
-		}
-		r, err := createIndex(es, indexName, mappings, settings)
-		if err != nil {
-			return fmt.Errorf("at creating index: %w", err)
-		}
+			if err := json.NewEncoder(cmd.OutOrStderr()).Encode(r); err != nil {
+				return serde.SerializingError(err)
+			}
 
-		if err := json.NewEncoder(cmd.OutOrStderr()).Encode(r); err != nil {
-			return serde.SerializingError(err)
+		default:
+			mAnds, err := handleDirCase(directory)
+			if err != nil {
+				return fmt.Errorf("at handleDirCase %w", err)
+			}
+
+			r, err := createIndex(es, indexName, mAnds.Mappings, mAnds.Settings)
+			if err != nil {
+				return fmt.Errorf("at creating index: %w", err)
+			}
+
+			if err := json.NewEncoder(cmd.OutOrStderr()).Encode(r); err != nil {
+				return serde.SerializingError(err)
+			}
+
 		}
 
 		return nil
@@ -142,14 +142,26 @@ func handleDirCase(directory string) (MappingsAndSettings, error) {
 }
 
 func handleFileCase(file string) (MappingsAndSettings, error) {
-	absPathDirToMappingsAndSettings, _ := filepath.Abs(file)
+	absPathToFile, _ := filepath.Abs(file)
 
-	_, err := os.Stat(absPathDirToMappingsAndSettings)
+	_, err := os.Stat(absPathToFile)
 	if err != nil {
 		if errors.Is(err, fs.ErrNotExist) {
 			return MappingsAndSettings{}, fmt.Errorf("the path %v does not exist, %w", file, err)
 		}
 		return MappingsAndSettings{}, fmt.Errorf("stat of the %v returned an  error %w", file, err)
 	}
+
+	openedFile, err := os.Open(file)
+	if err != nil {
+		return MappingsAndSettings{}, fmt.Errorf("at os.Open %w", err)
+	}
+
+	mAnds, err := serde.DecodeJsonFileToStructV2[MappingsAndSettings](openedFile)
+	if err != nil {
+		return MappingsAndSettings{}, serde.DeserializingError(err)
+	}
+
+	return mAnds, nil
 
 }
