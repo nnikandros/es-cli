@@ -20,6 +20,8 @@ fields:
   - name: APP_ID
     usage: "app id field"
 
+  - name: INSTRUMENT
+    usage: "instrument field"
   
   
   - name: REQUEST_ID
