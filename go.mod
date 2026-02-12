@@ -1,10 +1,11 @@
 module escobra
 
-go 1.24.4
+go 1.26
 
 require (
 	github.com/elastic/go-elasticsearch/v8 v8.18.1
 	github.com/spf13/cobra v1.10.1
+	go.yaml.in/yaml/v2 v2.4.2
 	sigs.k8s.io/yaml v1.6.0
 )
 
@@ -17,5 +18,5 @@ require (
 	go.opentelemetry.io/otel v1.28.0 // indirect
 	go.opentelemetry.io/otel/metric v1.28.0 // indirect
 	go.opentelemetry.io/otel/trace v1.28.0 // indirect
-	go.yaml.in/yaml/v2 v2.4.2 // indirect
+	golang.org/x/sys v0.38.0 // indirect
 )
