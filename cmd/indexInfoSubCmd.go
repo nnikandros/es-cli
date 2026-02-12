@@ -19,7 +19,7 @@ func infoIndexCmdFunc(es *elasticsearch.TypedClient) IndexSubCmd {
 		Short: "information about indices",
 		Long:  `indicies`,
 		RunE:  runIndexInfoCmdFunc(es),
-		Args:  cobra.NoArgs,
+		// Args:  cobra.NoArgs,
 	}
 
 	return cmd
@@ -35,6 +35,24 @@ func addInfoIndexFlags(indexInfoSub IndexSubCmd) IndexSubCmd {
 func runIndexInfoCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		t, _ := cmd.Flags().GetBool("all")
+
+		indexName := ParseArgsIntoString(cmd, args)
+
+		if len(indexName) > 0 {
+			ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancelFunc()
+
+			r, err := es.Cat.Indices().Index(indexName).Do(ctx)
+			if err != nil {
+				return fmt.Errorf("at getting index info %w", err)
+			}
+
+			if err := json.NewEncoder(cmd.OutOrStdout()).Encode(r); err != nil {
+				return serde.SerializingError(err)
+			}
+
+			return nil
+		}
 
 		switch {
 		default:
