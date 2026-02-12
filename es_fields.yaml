@@ -23,6 +23,9 @@ fields:
   - name: INSTRUMENT
     usage: "instrument field"
   
+  - name: CASE_CODE
+    usage: "case code field"
+  
   
   - name: REQUEST_ID
     usage: "request id field"
