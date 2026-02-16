@@ -13,23 +13,25 @@ Currently the configuration assumes that the elasticsearch cluster is hosted on 
 Currently the `es` command has a few subcommands. Some subcomannds have their own subcommand and most of subcommands has it's own flags.
 The current subcommands are:
 
-1. index. Has further subcommands:
+- index. Has further subcommands:
 
-   - create, create an index with specified mappings and settings
-   - delete, deletes an index
-   - list, list the names of all indices in the cluster
+  - create, create an index with specified mappings and settings
+  - delete, deletes an index
+  - list, list the names of all indices in the cluster
 
-2. count
-3. info. Has further subcommands:
+- info. Has further subcommands:
 
-   - cluster
-   - nodes
-   - index
+  - cluster
+  - nodes
+  - index
 
-4. search
-5. migrate. Has further subcommands
-   - clone
-   - reindex
+- search
+- migrate. Has further subcommands
+
+  - clone
+  - reindex
+
+- tasks
 
 ### Usage of Subcommands and Examples of flags
 
@@ -59,6 +61,12 @@ Below you can find some commands. For displaying the commands we will assume tha
 
   ```bash
   es index create <new-index> --directory /elasticsearch/indices/some-index
+  ```
+
+  Alternatively we could have also a single json file with keys "mappings" and "settings". Then we can do
+
+  ```bash
+  es index create <new-index> --path /elasticsearch/indices/some-index.json
   ```
 
 - Delete an index
