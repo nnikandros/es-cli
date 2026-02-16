@@ -25,6 +25,9 @@ fields:
   
   - name: CASE_CODE
     usage: "case code field"
+
+  - name: DOCUMENT_RELEVANCE
+    usage: "document relevance"
   
   
   - name: REQUEST_ID
