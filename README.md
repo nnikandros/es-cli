@@ -25,7 +25,7 @@ The current subcommands are:
   - nodes
   - index
 
-- search
+- search. Doing search against indices. It has no subcommands but there are many flag options.
 - migrate. Has further subcommands
 
   - clone
