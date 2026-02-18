@@ -45,7 +45,7 @@ func TestReadEnvVars(t *testing.T) {
 }
 
 func filter[T any](s []T, predicate func(T) bool) []T {
-	result := make([]T, 0, len(s)) // Pre-allocate for efficiency
+	result := make([]T, 0, len(s))
 	for _, v := range s {
 		if predicate(v) {
 			result = append(result, v)
