@@ -19,7 +19,7 @@ func infoIndexCmdFunc(es *elasticsearch.TypedClient) IndexSubCmd {
 		Short: "information about indices",
 		Long:  `indicies`,
 		RunE:  runIndexInfoCmdFunc(es),
-		// Args:  cobra.NoArgs,
+		// Args:  cobra.A,
 	}
 
 	return cmd
