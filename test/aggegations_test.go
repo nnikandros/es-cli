@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"escobra/cmd"
-	"fmt"
 	"log"
 	"testing"
 
@@ -26,44 +25,52 @@ func TestAggegations(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	aggs := map[string]types.Aggregations{"CASE_CODE": {Terms: &types.TermsAggregation{Field: new("CASE_CODE")}}}
+	// field := "CASE_CODE"
+	// field2 := "COJ_DOC_TYPE"
+
+	// aggs := map[string]types.Aggregations{field: {Terms: &types.TermsAggregation{Field: &field}}, field2: {Terms: &types.TermsAggregation{Field: &field2}}}
 	// typedClient.Search().Aggregations(aggs)
 
-	r, err := typedClient.Search().Index("castor-test-alldecidionspublic-with-coj-v1").Aggregations(aggs).Size(0).Do(context.Background())
+	q := []types.MultiTermLookup{{Field: "CASE_CODE"}, {Field: "COJ_DOC_TYPE"}}
+
+	m := types.MultiTermsAggregation{Terms: q}
+	aggs2 := map[string]types.Aggregations{"case_code_and_coj": {MultiTerms: &m}}
+
+	r, err := typedClient.Search().Index("castor-test-alldecidionspublic-with-coj-v1").Aggregations(aggs2).Size(0).Do(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// if err = json.NewEncoder(t.Output()).Encode(r); err != nil {
-	// 	log.Fatal(err)
+	if err = json.NewEncoder(t.Output()).Encode(r); err != nil {
+		log.Fatal(err)
+	}
+	// x := Aggregations{}
+
+	// c := r.Aggregations[field]
+	// b, err := json.Marshal(c)
+	// if err != nil {
+	// 	t.Error(err)
 	// }
-	x := Aggregations{}
+	// // if err = json.NewEncoder(t.Output()).Encode(c); err != nil {
+	// // 	log.Fatal(err)
+	// // }
 
-	c := r.Aggregations["CASE_CODE"]
-	b, err := json.Marshal(c)
-	if err != nil {
-		t.Error(err)
-	}
-	// if err = json.NewEncoder(t.Output()).Encode(c); err != nil {
-	// 	log.Fatal(err)
+	// // var x map[string]any
+
+	// err = json.Unmarshal(b, &x)
+	// if err != nil {
+	// 	t.Error(err)
 	// }
 
-	// var x map[string]any
+	// fmt.Printf("%+v\n", x)
 
-	err = json.Unmarshal(b, &x)
-	if err != nil {
-		t.Error(err)
-	}
+	// keys := make([]string, 0)
 
-	fmt.Printf("%+v\n", x)
+	// for _, v := range x.Buckets {
+	// 	keys = append(keys, v.Key)
+	// }
 
-	keys := make([]string, 0)
-
-	for _, v := range x.Buckets {
-		keys = append(keys, v.Key)
-	}
-
-	fmt.Println(keys)
+	// fmt.Println(keys)
 
 	// if c.StringTerms == nil {
 	// 	t.Errorf("not a StringTermsAggregate")
