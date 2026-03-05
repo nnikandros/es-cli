@@ -47,21 +47,46 @@ func TestFileName(t *testing.T) {
 // 	}
 // }
 
-func TestGetName(t *testing.T) {
-	f, _ := os.Stat("/ec/local/home/nikanni/my-programming/app-workspace/es-cli/cmd")
-	fmt.Println(cmd.GetName(f))
-	// tmpDir := t.TempDir()
-	// dir := filepath.Join(tmpDir, "test-index")
-	// fmt.Println(dir)
+func TestGetNameJsonCase(t *testing.T) {
+	tmpDir := t.TempDir()
+	file2 := filepath.Join(tmpDir, "test-index-pupis.json")
+	err := os.WriteFile(file2, []byte(`{"test": true}`), 0644)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	// filePath := filepath.Join(dir, "test-index-ms.json")
+	f2, err := os.Stat(file2)
+	if err != nil {
+		t.Fatal(err)
+	}
 
-	// fileInfo, err := os.Stat(filePath)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// fmt.Printf("%+v", fileInfo)
-	// // output := cmd.GetName(filePath)
+	exp2 := "test-index-pupis"
+	output2 := cmd.GetName(f2)
+
+	if exp2 != output2 {
+		t.Errorf("expected %s, got %s", exp2, output2)
+	}
+
+}
+func TestGetNameDirCase(t *testing.T) {
+	tmpDir := t.TempDir()
+	dir1 := filepath.Join(tmpDir, "test-index-log")
+	err := os.Mkdir(dir1, 0755)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	f1, err := os.Stat(dir1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	exp1 := "test-index-log"
+	output1 := cmd.GetName(f1)
+
+	if exp1 != output1 {
+		t.Errorf("expected %s, got %s", exp1, output1)
+	}
 
 }
 
@@ -96,3 +121,16 @@ func TestGetName(t *testing.T) {
 // // fmt.Printf("%+v\n", tmpDir)
 // fmt.Printf("%+v\n", tmpFileMappings.Name())
 // // fmt.Printf("%+v", tmpFileSettings)
+
+// tmpDir := t.TempDir()
+// dir := filepath.Join(tmpDir, "test-index")
+// fmt.Println(dir)
+
+// filePath := filepath.Join(dir, "test-index-ms.json")
+
+// fileInfo, err := os.Stat(filePath)
+// if err != nil {
+// 	log.Fatal(err)
+// }
+// fmt.Printf("%+v", fileInfo)
+// // output := cmd.GetName(filePath)
