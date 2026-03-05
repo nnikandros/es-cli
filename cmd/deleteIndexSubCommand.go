@@ -28,11 +28,7 @@ func deleteIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 func runDeleteIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 
-		if len(args) != 1 {
-			return fmt.Errorf("you need to provide one index name to delete, you provided: %v", len(args))
-		}
-
-		indexName := args[0]
+		indexName := ParseArgsIntoString(cmd, args)
 
 		ctx, cancel := context.WithTimeout(context.Background(), 6*time.Second)
 		defer cancel()

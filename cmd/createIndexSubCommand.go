@@ -35,7 +35,7 @@ es index create --directory ./elasticops/settings_mappings/test-index`,
 }
 
 func addCreateFlags(create *cobra.Command) *cobra.Command {
-	create.Flags().StringP("directory", "d", "", "path to the directory where you have the mappings and settings")
+	// create.Flags().StringP("directory", "d", "", "path to the directory where you have the mappings and settings")
 	create.Flags().StringP("path", "p", "", "path to the json file where you have the mappings and settings together")
 	return create
 
@@ -44,14 +44,18 @@ func addCreateFlags(create *cobra.Command) *cobra.Command {
 func runCreateIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 
-		directory, _ := cmd.Flags().GetString("directory")
-		pathToJson, _ := cmd.Flags().GetString("path")
+		// directory, _ := cmd.Flags().GetString("directory")
+		path, _ := cmd.Flags().GetString("path")
 
 		var indexName string
+		info, err := os.Stat(path)
+		if err != nil {
+			return fmt.Errorf("os.Stat %w", err)
+		}
 
 		switch len(args) {
 		case 0:
-			indexName = filepath.Base(directory)
+			indexName = GetName(info)
 		case 1:
 			indexName = args[0]
 		default:
@@ -59,11 +63,9 @@ func runCreateIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 
 		}
 
-		isdir := len(directory)
-
-		switch isdir {
-		case 0:
-			mAnds, err := handleFileCase(pathToJson)
+		switch info.IsDir() {
+		case false:
+			mAnds, err := handleFileCase(path)
 			if err != nil {
 				return fmt.Errorf("at handleFileCase %w", err)
 			}
@@ -78,7 +80,7 @@ func runCreateIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			}
 
 		default:
-			mAnds, err := handleDirCase(directory)
+			mAnds, err := handleDirCase(path)
 			if err != nil {
 				return fmt.Errorf("at handleDirCase %w", err)
 			}

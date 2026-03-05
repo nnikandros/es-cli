@@ -3,6 +3,7 @@ package cmd
 import (
 	"bufio"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -61,4 +62,14 @@ func ParseArgsIntoString(cmd *cobra.Command, args []string) string {
 	}
 
 	return strings.Join(indexList, ",")
+}
+
+func GetName(fileInfo os.FileInfo) string {
+
+	if !fileInfo.IsDir() {
+		return strings.TrimSuffix(filepath.Base(fileInfo.Name()), filepath.Ext(fileInfo.Name()))
+	}
+
+	return fileInfo.Name()
+
 }
