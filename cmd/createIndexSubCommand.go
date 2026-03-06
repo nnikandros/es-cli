@@ -35,7 +35,6 @@ es index create --directory ./elasticops/settings_mappings/test-index`,
 }
 
 func addCreateFlags(create *cobra.Command) *cobra.Command {
-	// create.Flags().StringP("directory", "d", "", "path to the directory where you have the mappings and settings")
 	create.Flags().StringP("path", "p", "", "path to the json file where you have the mappings and settings together")
 	return create
 
@@ -44,13 +43,12 @@ func addCreateFlags(create *cobra.Command) *cobra.Command {
 func runCreateIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 
-		// directory, _ := cmd.Flags().GetString("directory")
 		path, _ := cmd.Flags().GetString("path")
 
 		var indexName string
 		info, err := os.Stat(path)
 		if err != nil {
-			return fmt.Errorf("os.Stat %w", err)
+			return fmt.Errorf("os.Stat for file %v %w", path, err)
 		}
 
 		switch len(args) {
