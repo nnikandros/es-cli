@@ -4,19 +4,22 @@ import (
 	"context"
 	"encoding/json"
 	"escobra/cmd"
+	"fmt"
 	"log"
 	"testing"
 
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 )
 
+type Bucket struct {
+	DocCount int    `json:"doc_count"`
+	Key      string `json:"key"`
+}
+
 type Aggregations struct {
-	Buckets []struct {
-		DocCount int    `json:"doc_count"`
-		Key      string `json:"key"`
-	} `json:"buckets"`
-	DocCountErrorUpperBound int `json:"doc_count_error_upper_bound"`
-	SumOtherDocCount        int `json:"sum_other_doc_count"`
+	Buckets                 []Bucket `json:"buckets"`
+	DocCountErrorUpperBound int      `json:"doc_count_error_upper_bound"`
+	SumOtherDocCount        int      `json:"sum_other_doc_count"`
 }
 
 func TestAggegations(t *testing.T) {
@@ -25,8 +28,8 @@ func TestAggegations(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	field := "CASE_CODE"
-	// field2 := "COJ_DOC_TYPE"
+	// field := "CASE_CODE"
+	field := "COJ_DOC_TYPE"
 
 	aggs := map[string]types.Aggregations{field: {Terms: &types.TermsAggregation{Field: &field}}}
 	// aggs := map[string]types.Aggregations{field: {Terms: &types.TermsAggregation{Field: &field}}, field2: {Terms: &types.TermsAggregation{Field: &field2}}}
@@ -41,12 +44,32 @@ func TestAggegations(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	// s := r.Aggregations["agg"]
-	// var aggsResults Aggregations
-	// json.Unmarshal()
-	if err = json.NewEncoder(t.Output()).Encode(r); err != nil {
+	s, ok := r.Aggregations[field]
+	if !ok {
+		t.Error(ok)
+	}
+	b, err := json.Marshal(s)
+	if err != nil {
 		log.Fatal(err)
 	}
+
+	var a = Aggregations{}
+
+	err = json.Unmarshal(b, &a)
+	if err != nil {
+		t.Errorf("unmarashal %v", err)
+	}
+	var uniqueKeys []string
+	for _, k := range a.Buckets {
+		uniqueKeys = append(uniqueKeys, k.Key)
+	}
+
+	fmt.Println(uniqueKeys)
+	// var aggsResults Aggregations
+	// json.Unmarshal()
+	// if err = json.NewEncoder(t.Output()).Encode(r); err != nil {
+	// 	log.Fatal(err)
+	// }
 }
 
 // x := Aggregations{}
