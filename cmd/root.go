@@ -55,12 +55,14 @@ func init() {
 
 	searchCmd := addSearchFlags(searchCmdFunc(typedClient))
 	// countcmd := addCountFlags(countCmdFunc(typedClient))
+	aggsCmd := addAggregateFlags(aggregateCmdFunc(typedClient))
 
 	clusterCmd := InfoCmdFunc(typedClient)
 	migrateCmd := migrateFunc(typedClient)
 	taskCmd := TasksCmdFunc(typedClient)
 
 	RootCmd.AddCommand(indicesCmd)
+	RootCmd.AddCommand(aggsCmd)
 	RootCmd.AddCommand(searchCmd)
 	RootCmd.AddCommand(clusterCmd)
 	// RootCmd.AddCommand(countcmd)

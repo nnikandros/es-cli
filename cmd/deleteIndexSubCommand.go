@@ -18,7 +18,7 @@ func deleteIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 		Long:  `deletes the given index provided as an argument (Careful with the use of this command )`,
 		RunE:  runDeleteIndexCmdFunc(es),
 
-		ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
+		ValidArgsFunction: ValidIndexArgsAutoCompletion(es),
 	}
 
 	return cmd

@@ -33,7 +33,7 @@ es index <test-log-v*> --settings
 es index <test-log-v*> -sm
 `,
 		SilenceUsage:      true,
-		ValidArgsFunction: ValidArgsFuncAutoCompletion(es),
+		ValidArgsFunction: ValidIndexArgsAutoCompletion(es),
 	}
 
 	return cmd

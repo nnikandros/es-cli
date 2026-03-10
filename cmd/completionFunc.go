@@ -31,7 +31,7 @@ func listIndicesAsSlice(es *elasticsearch.TypedClient) ([]cobra.Completion, erro
 
 }
 
-func ValidArgsFuncAutoCompletion(es *elasticsearch.TypedClient) cobra.CompletionFunc {
+func ValidIndexArgsAutoCompletion(es *elasticsearch.TypedClient) cobra.CompletionFunc {
 	s := func(cmd *cobra.Command, args []string, toComplete string) ([]cobra.Completion, cobra.ShellCompDirective) {
 		s, err := listIndicesAsSlice(es)
 		if err != nil {

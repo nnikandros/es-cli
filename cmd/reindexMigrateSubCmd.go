@@ -35,8 +35,8 @@ func addReindexFlags(reindexCmd *cobra.Command, es *elasticsearch.TypedClient) *
 	reindexCmd.Flags().Int64("size", 0, "number of docs to reindex")
 	reindexCmd.Flags().BoolP("wait", "w", false, "wait for completion. If false it will return a task id")
 
-	reindexCmd.RegisterFlagCompletionFunc("target", ValidArgsFuncAutoCompletion(es))
-	reindexCmd.RegisterFlagCompletionFunc("source", ValidArgsFuncAutoCompletion(es))
+	reindexCmd.RegisterFlagCompletionFunc("target", ValidIndexArgsAutoCompletion(es))
+	reindexCmd.RegisterFlagCompletionFunc("source", ValidIndexArgsAutoCompletion(es))
 	return reindexCmd
 
 }

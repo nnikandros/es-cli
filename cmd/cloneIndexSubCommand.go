@@ -31,8 +31,8 @@ func addCloneFlags(cloneCmd *cobra.Command, es *elasticsearch.TypedClient) *cobr
 	cloneCmd.Flags().StringP("target", "t", "", "Name of the clone")
 	cloneCmd.Flags().StringP("source", "s", "", "Name of the index that will be cloned.")
 
-	cloneCmd.RegisterFlagCompletionFunc("target", ValidArgsFuncAutoCompletion(es))
-	cloneCmd.RegisterFlagCompletionFunc("source", ValidArgsFuncAutoCompletion(es))
+	cloneCmd.RegisterFlagCompletionFunc("target", ValidIndexArgsAutoCompletion(es))
+	cloneCmd.RegisterFlagCompletionFunc("source", ValidIndexArgsAutoCompletion(es))
 
 	return cloneCmd
 

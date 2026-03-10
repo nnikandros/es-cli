@@ -38,3 +38,6 @@ fields:
 
   - name: ID
     usage: "internal id "
+  
+  - name: HOST
+    usage: "host name"
