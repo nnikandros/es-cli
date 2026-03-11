@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 	"github.com/spf13/cobra"
 )
@@ -32,9 +33,7 @@ func aggregateCmdFunc(es *elasticsearch.TypedClient) AggregateCmd {
 		Long:  `A longer description that spans multiple lines and likely contains`,
 
 		// RunE: runAggregateCmdFunc(es),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
-		},
+		RunE: runAggregateCmdFunc(es),
 		// SilenceUsage:      true,
 		ValidArgsFunction: ValidIndexArgsAutoCompletion(es),
 	}
@@ -66,7 +65,7 @@ func runAggregateCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return fmt.Errorf("at Search with aggregatations %w", err)
 		}
 
-		if !buckets {
+		if buckets {
 			if err = json.NewEncoder(cmd.OutOrStdout()).Encode(r.Aggregations); err != nil {
 				return fmt.Errorf("at serializing aggrs %w", err)
 			}
@@ -98,4 +97,13 @@ func runAggregateCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		}
 		return nil
 	}
+}
+
+func processAggregateResponse(r *search.Response) {
+
+}
+
+func createAggsMap(cmd *cobra.Command) map[string]types.Aggregations {
+	return nil
+
 }
