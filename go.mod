@@ -4,6 +4,7 @@ go 1.26
 
 require (
 	github.com/elastic/go-elasticsearch/v8 v8.18.1
+	github.com/nnikandros/serde v0.1.1
 	github.com/spf13/cobra v1.10.1
 	go.yaml.in/yaml/v2 v2.4.2
 	sigs.k8s.io/yaml v1.6.0

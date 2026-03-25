@@ -8,8 +8,9 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"serde"
 	"time"
+
+	"github.com/nnikandros/serde"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/indices/create"

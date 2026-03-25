@@ -7,11 +7,12 @@ import (
 	"io"
 	"log"
 	"maps"
-	"serde"
 	"slices"
 	"strings"
 	"text/tabwriter"
 	"time"
+
+	"github.com/nnikandros/serde"
 
 	_ "embed"
 

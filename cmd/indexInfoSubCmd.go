@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"serde"
 	"text/tabwriter"
 	"time"
+
+	"github.com/nnikandros/serde"
 
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/spf13/cobra"
