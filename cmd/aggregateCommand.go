@@ -33,9 +33,7 @@ func aggregateCmdFunc(es *elasticsearch.TypedClient) AggregateCmd {
 		Short: "aggegate functionality",
 		Long:  `A longer description that spans multiple lines and likely contains`,
 
-		// RunE: runAggregateCmdFunc(es),
-		RunE: runAggregateCmdFunc(es),
-		// SilenceUsage:      true,
+		RunE:              runAggregateCmdFunc(es),
 		ValidArgsFunction: ValidIndexArgsAutoCompletion(es),
 	}
 

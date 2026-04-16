@@ -35,7 +35,7 @@ func addInfoIndexFlags(indexInfoSub IndexSubCmd) IndexSubCmd {
 
 func runIndexInfoCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		t, _ := cmd.Flags().GetBool("all")
+		all, _ := cmd.Flags().GetBool("all")
 
 		indexName := ParseArgsIntoString(cmd, args)
 
@@ -57,13 +57,13 @@ func runIndexInfoCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 
 		switch {
 		default:
-			if err := listIndicesTabular(es, cmd.OutOrStderr()); err != nil {
+			if err := listIndicesTabular(es, cmd.OutOrStdout()); err != nil {
 				return fmt.Errorf("at listing indices in a table format %w", err)
 			}
 
 			return nil
 
-		case t:
+		case all:
 			ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancelFunc()
 			r, err := es.Cat.Indices().Do(ctx)
