@@ -22,12 +22,13 @@ func createIndexCmdFunc(es *elasticsearch.TypedClient) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "create",
 		Short: "create subcommand creates an index",
-		Long: `create subcommand creates an index with args the name of the new index and as flag
-argument the directory where you store the mappings.json and settings.json`,
+		Long: `create subcommand creates an index with args the name of the new index. The flag is the path to the settings and mappings.
+If you have the settings.json and mappings.json as separate files in dir you can pass teh path to the directory.
+Otherwise if you have the settings and mappings in a single json as {"mappings":{...},"settings":{...}} you can also pass the path to the json file.`,
 		RunE: runCreateIndexCmdFunc(es),
-		Example: `es index create <name-new-index> -d ./elasticops/settings_mappings/test-index
-es index create <name-new-index> --directory ./elasticops/settings_mappings/test-index
-es index create --directory ./elasticops/settings_mappings/test-index`,
+		Example: `es index create <name-new-index> -p ./elasticops/settings_mappings/test-index
+es index create <name-new-index> --path ./elasticops/settings_mappings/test-index
+es index create <name-new-index> -p ./elasticops/settings_mappings/index_template.json`,
 		// PreRunE: func(cmd *cobra.Command, args []string) error {},
 	}
 
@@ -36,7 +37,7 @@ es index create --directory ./elasticops/settings_mappings/test-index`,
 }
 
 func addCreateFlags(create *cobra.Command) *cobra.Command {
-	create.Flags().StringP("path", "p", "", "path to the json file where you have the mappings and settings together")
+	create.Flags().StringP("path", "p", "", "path to the json file or the directory where you have the mappings and settings")
 	return create
 
 }
