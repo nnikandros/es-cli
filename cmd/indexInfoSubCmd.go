@@ -14,13 +14,14 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// :TODO add valid args function
 func infoIndexCmdFunc(es *elasticsearch.TypedClient) IndexSubCmd {
 	cmd := &cobra.Command{
-		Use:   "index",
-		Short: "information about indices",
-		Long:  `indicies`,
-		RunE:  runIndexInfoCmdFunc(es),
-		// Args:  cobra.A,
+		Use:               "index",
+		Short:             "information about indices",
+		Long:              `indicies`,
+		RunE:              runIndexInfoCmdFunc(es),
+		ValidArgsFunction: ValidIndexArgsAutoCompletion(es),
 	}
 
 	return cmd

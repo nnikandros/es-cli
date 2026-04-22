@@ -39,6 +39,7 @@ func addCloneFlags(cloneCmd *cobra.Command, es *elasticsearch.TypedClient) *cobr
 
 }
 
+// To refactor
 func runCloneIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
 		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
