@@ -29,8 +29,8 @@ Enabling tha flag --tab will enable move verbose information such as number of d
 		SilenceUsage: true,
 		Args:         cobra.NoArgs,
 		Example: `es index list
-es index list
-es index list -a`,
+es index list -a
+es index list --all`,
 	}
 
 	return cmd
