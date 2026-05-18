@@ -34,7 +34,7 @@ func addReindexFlags(reindexCmd *cobra.Command, es *elasticsearch.TypedClient) *
 	reindexCmd.Flags().StringP("target", "t", "", "Name of clone index that will be created.")
 	reindexCmd.Flags().StringSliceP("source", "s", []string{}, "Name of clone index that will be created.")
 	reindexCmd.Flags().Int64("size", 0, "number of docs to reindex")
-	reindexCmd.Flags().BoolP("wait", "w", false, "wait for completion. If false it will return a task id")
+	reindexCmd.Flags().BoolP("wait", "w", true, "wait for completion. If false it will return a task id")
 
 	reindexCmd.RegisterFlagCompletionFunc("target", ValidIndexArgsAutoCompletion(es))
 	reindexCmd.RegisterFlagCompletionFunc("source", ValidIndexArgsAutoCompletion(es))
@@ -44,7 +44,7 @@ func addReindexFlags(reindexCmd *cobra.Command, es *elasticsearch.TypedClient) *
 
 func runReIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		sourcIndices, _ := cmd.Flags().GetStringSlice("source")

@@ -51,7 +51,7 @@ func runCloneIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		_, err := es.Indices.Close(sourceIndex).Do(ctx)
 
 		if err != nil {
-			return fmt.Errorf("at closing %w", err)
+			return fmt.Errorf("at closing source index %v: %w", sourceIndex, err)
 		}
 
 		r2, err := es.Indices.Clone(sourceIndex, targetIndex).Do(ctx)
@@ -68,7 +68,7 @@ func runCloneIndexCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 			return fmt.Errorf("at opening the index %v: %w", sourceIndex, err)
 		}
 
-		fmt.Fprintln(cmd.OutOrStdout(), r3)
+		fmt.Fprintf(cmd.OutOrStdout(), "%+v", r3)
 		return nil
 	}
 
