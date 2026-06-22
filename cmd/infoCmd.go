@@ -1,7 +1,13 @@
 package cmd
 
 import (
+	"context"
+	"encoding/json"
+	"time"
+
 	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/elastic/go-elasticsearch/v8/typedapi/core/info"
+	"github.com/nnikandros/serde"
 	"github.com/spf13/cobra"
 )
 
@@ -13,23 +19,11 @@ type InfoSubCmd = *cobra.Command
 type NodesSubCmd = *cobra.Command
 type IndexSubCmd = *cobra.Command
 
-// func clusterCmdFunc(es *elasticsearch.TypedClient) ClusterCmd {
-// 	cmd := &cobra.Command{
-// 		Use:   "cluster",
-// 		Short: "actions about the cluster",
-// 		Long:  `stuff abouit the cluster`,
-// 		RunE:  runClusterCmdFunc(es),
-// 		Args:  cobra.NoArgs,
-// 	}
-
-// 	return cmd
-// }
-
 func infoCmdFunc(es *elasticsearch.TypedClient) InfoCmd {
 	cmd := &cobra.Command{
 		Use:   "info",
-		Short: "info about the es",
-		Long:  `stuff abouit the cluster`,
+		Short: "you know, for search",
+		Long:  `Basic information of cluster, including version. You know, for search`,
 		RunE:  runInfoCmdFunc(es),
 		Args:  cobra.NoArgs,
 	}
@@ -39,6 +33,18 @@ func infoCmdFunc(es *elasticsearch.TypedClient) InfoCmd {
 
 func runInfoCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 	return func(cmd *cobra.Command, args []string) error {
+		ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+
+		r, err := info.New(es).Do(ctx)
+		if err != nil {
+			return err
+		}
+
+		if err := json.NewEncoder(cmd.OutOrStdout()).Encode(r); err != nil {
+			return serde.SerializingError(err)
+		}
+
 		return nil
 	}
 
