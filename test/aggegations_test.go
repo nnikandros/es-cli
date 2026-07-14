@@ -28,10 +28,10 @@ func TestAggegations(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	field := "CASE_CODE"
-	// field2 := "COJ_DOC_TYPE"
+	field1 := "CASE_CODE"
+	field2 := "COJ_DOC_TYPE"
 
-	aggs := map[string]types.Aggregations{field: {Terms: &types.TermsAggregation{Field: &field}}}
+	aggs := map[string]types.Aggregations{field1: {Terms: &types.TermsAggregation{Field: &field1}}, field2: {Terms: &types.TermsAggregation{Field: &field2}}}
 	// aggs := map[string]types.Aggregations{field: {Terms: &types.TermsAggregation{Field: &field}}, field2: {Terms: &types.TermsAggregation{Field: &field2}}}
 	// typedClient.Search().Aggregations(aggs)
 
@@ -43,14 +43,15 @@ func TestAggegations(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s, ok := r.Aggregations[field]
-	if !ok {
-		t.Error(ok)
-	}
-	b, err := json.Marshal(s)
+	// s, ok := r.Aggregations[field]
+	// if !ok {
+	// 	t.Error(ok)
+	// }
+	b, err := json.Marshal(r)
 	if err != nil {
 		log.Fatal(err)
 	}
+	fmt.Printf("%s\n", b)
 
 	var a = Aggregations{}
 

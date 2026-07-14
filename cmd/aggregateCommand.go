@@ -42,8 +42,8 @@ func aggregateCmdFunc(es *elasticsearch.TypedClient) AggregateCmd {
 }
 
 func addAggregateFlags(aggsCmd AggregateCmd) AggregateCmd {
-	aggsCmd.Flags().StringP("field", "f", "", "add desc")
-	aggsCmd.Flags().BoolP("buckets", "b", false, "add desc")
+	aggsCmd.Flags().StringP("field", "f", "field to aggegate", "add desc")
+	aggsCmd.Flags().BoolP("buckets", "b", false, "show more detailed info on the aggregation, like buckets, number of items in the bucket")
 
 	return aggsCmd
 
@@ -76,7 +76,7 @@ func runAggregateCmdFunc(es *elasticsearch.TypedClient) RunEFunc {
 		if !ok {
 			return fmt.Errorf("r.Aggegations is missing key %v", field)
 		}
-
+		// Buggy aftter this
 		b, err := json.Marshal(fieldAggs)
 		if err != nil {
 			return serde.SerializingError(err)
