@@ -8,10 +8,16 @@ import (
 )
 
 func NewElasticTypedClient() (*elasticsearch.TypedClient, error) {
+	esCertPath := os.Getenv("ES_CERT_PATH")
 
-	cert, _ := os.ReadFile(os.Getenv("ES_CERT_PATH"))
+	cfg := elasticsearch.Config{}
 
-	cfg := elasticsearch.Config{Addresses: checkHosts(), APIKey: os.Getenv("ES_API_KEY"), CACert: cert}
+	if esCertPath != "" {
+		cert, _ := os.ReadFile(os.Getenv("ES_CERT_PATH"))
+		cfg = elasticsearch.Config{Addresses: checkHosts(), APIKey: os.Getenv("ES_API_KEY"), CACert: cert}
+	} else {
+		cfg = elasticsearch.Config{Addresses: checkHosts(), APIKey: os.Getenv("ES_API_KEY")}
+	}
 
 	es, err := elasticsearch.NewTypedClient(cfg)
 	if err != nil {
