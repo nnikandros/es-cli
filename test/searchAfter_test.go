@@ -13,12 +13,6 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 )
 
-func Piki(args ...int) {
-
-	fmt.Println(args)
-
-}
-
 func TestSearchAFter(t *testing.T) {
 
 	typedClient, err := cmd.NewElasticTypedClient()
