@@ -28,14 +28,16 @@ Certain operations for example pinging the cluster and listing all the indices r
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
-func Execute() {
+// fieldsYAML is the content of es_fields.yaml, embedded by main.
+func Execute(fieldsYAML []byte) {
+	setupCommands(fieldsYAML)
 	err := RootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
 }
 
-func init() {
+func setupCommands(fieldsYAML []byte) {
 	// err := godotenv.Load()
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
@@ -53,7 +55,7 @@ func init() {
 
 	indicesCmd := IndexCmdFunc(typedClient)
 
-	searchCmd := addSearchFlags(searchCmdFunc(typedClient))
+	searchCmd := addSearchFlags(searchCmdFunc(typedClient), fieldsYAML)
 	// countcmd := addCountFlags(countCmdFunc(typedClient))
 	aggsCmd := addAggregateFlags(aggregateCmdFunc(typedClient))
 

@@ -21,7 +21,8 @@ clean:
 	@rm ./bin/es
 
 
-test:
+unit-test:
 	@go test ./test/
 
- 
+integration-test:
+	@go test ./test -tags=integration

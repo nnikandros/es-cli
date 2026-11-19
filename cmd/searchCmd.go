@@ -14,8 +14,6 @@ import (
 
 	"github.com/nnikandros/serde"
 
-	_ "embed"
-
 	"github.com/elastic/go-elasticsearch/v8"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/core/search"
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
@@ -25,9 +23,6 @@ import (
 )
 
 type SearchCmd = *cobra.Command
-
-//go:embed es_fields.yaml
-var fileByte []byte
 
 type EsFieldsConfig struct {
 	Name         string   `yaml:"name"`
@@ -63,7 +58,7 @@ es search <index> --sort-by TIMESTAMP (Do an empty search but sort the results w
 
 }
 
-func addSearchFlags(searchCmd SearchCmd) SearchCmd {
+func addSearchFlags(searchCmd SearchCmd, fileByte []byte) SearchCmd {
 	var sortByArgs []string
 
 	searchCmd.Flags().IntP("size", "s", 10, "size of search")

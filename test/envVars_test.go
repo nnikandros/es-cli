@@ -20,7 +20,7 @@ type EsFields struct {
 }
 
 func TestReadEnvVars(t *testing.T) {
-	b, err := os.ReadFile("../cmd/es_fields.yaml")
+	b, err := os.ReadFile("../es_fields.yaml")
 	if err != nil {
 		t.Fatalf("failed to read yaml file: %v", err)
 	}

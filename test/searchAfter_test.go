@@ -1,3 +1,5 @@
+//go:build integration
+
 package test
 
 import (
@@ -13,7 +15,7 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types/enums/sortorder"
 )
 
-func TestSearchAFter(t *testing.T) {
+func TestSearchAFterIntegration(t *testing.T) {
 
 	typedClient, err := cmd.NewElasticTypedClient()
 	if err != nil {
