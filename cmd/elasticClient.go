@@ -38,3 +38,8 @@ func checkHosts() []string {
 	return []string{hosts}
 
 }
+
+// &tls.Config{InsecureSkipVerify: true}
+// transport := http.DefaultTransport.(*http.Transport).Clone()
+//   transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+//   cfg.Transport = transport
